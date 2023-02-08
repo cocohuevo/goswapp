@@ -34,10 +34,6 @@ class UserController extends Controller
             'email' => 'required|email',
             'type' => 'required',
             'password' => 'required',
-            'boscoins' => 'required',
-            'address' => 'required',
-            'mobile' => 'required',
-            'assessment' => 'required',
 
         ]);
         if($validator->fails()) {
@@ -77,10 +73,6 @@ class UserController extends Controller
             'email' => 'required|email',
             'type' => 'required',
             'password' => 'required',
-            'boscoins' => 'required',
-            'address' => 'required',
-            'mobile' => 'required',
-            'assessment' => 'required',
         ]);
 
         if($validator->fails()){
