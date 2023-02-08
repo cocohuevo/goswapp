@@ -8,6 +8,7 @@ use App\User;
 use Illuminate\Support\Facades\Auth;
 use Validator;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Hash;
 
 class RegisterController extends Controller {
     public $successStatus = 200;
@@ -25,7 +26,6 @@ class RegisterController extends Controller {
         'email.unique' => 'El Correo electrónico ya ha sido registrado.',
         'password.required' => 'El campo Contraseña es obligatorio.',
         'password.min' => 'La Contraseña debe tener al menos 6 caracteres.',
-        'password.confirmed' => 'La confirmación de Contraseña no coincide.',
     ]);
 
     if ($validator->fails()) {
@@ -35,10 +35,10 @@ class RegisterController extends Controller {
     $input = $request->all();
     $input['password'] = Hash::make($input['password']);
     $user = User::create($input);
-    $token = $user->createToken('MyApp')->accessToken;
+    //$token = $user->createToken('MyApp')->accessToken;
 
     return response()->json([
-        'token' => $token,
+        //'token' => $token,
         'firstname' => $user->firstname,
     ], 200);
 }
