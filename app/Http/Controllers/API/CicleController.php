@@ -4,22 +4,16 @@ namespace App\Http\Controllers\API;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Profile;
-use Validator;
+use App\Cicle;
 
-
-class ProfileController extends Controller
+class CicleController extends Controller
 {
     public $successStatus = 200;
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function index()
     {
-        $profiles = Profile::all();
-        return response()->json(['Perfiles' => $profiles->toArray()], $this->successStatus);
+        $cicles = Cicle::all();
+        return response()->json(['Ciclos' => $cicles->toArray()], $this->successStatus);
     }
 
     /**
@@ -33,12 +27,13 @@ class ProfileController extends Controller
         $input = $request->all();
         $validator = Validator::make($input, [
             'name'=>'required',
+            'description'=>'required',
         ]);
         if($validator->fails()){
             return response()->json(['error' => $validator->errors()], 401);       
         }
-        $profile = Profile::create($input);
-        return response()->json(['Perfil' => $profile->toArray()], $this->successStatus);
+        $cicle = Cicle::create($input);
+        return response()->json(['Cicle' => $cicle->toArray()], $this->successStatus);
     }
 
     /**
@@ -49,11 +44,11 @@ class ProfileController extends Controller
      */
     public function show($id)
     {
-        $profile = Profile::find($profile->id);
-        if (is_null($profile)) {
+        $cicle = Cicle::find($cicle->id);
+        if (is_null($cicle)) {
             return response()->json(['error' => $validator->errors()], 401);
         }
-        return response()->json(['Perfil' => $profile->toArray()], $this->successStatus);
+        return response()->json(['Ciclo' => $cicle->toArray()], $this->successStatus);
     }
 
     /**
@@ -63,18 +58,20 @@ class ProfileController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request,Profile $profile)
+    public function update(Request $request, $id)
     {
         $input = $request->all();
         $validator = Validator::make($input, [
             'name'=>'required',
+            'description'=>'required',
         ]);
         if($validator->fails()){
             return response()->json(['error' => $validator->errors()], 401);       
         }
-        $profile->name= $input['name'];
-        $profile->save();
-        return response()->json(['Perfil' => $profile->toArray()], $this->successStatus);
+        $cicle->name= $input['name'];
+        $cicle->description= $input['description'];
+        $cicle->save();
+        return response()->json(['Cicle' => $cicle->toArray()], $this->successStatus);
     }
 
     /**
@@ -83,9 +80,10 @@ class ProfileController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Profile $profile)
+    public function destroy($id)
     {
-        $profile->delete();
-        return response()->json(['Perfil' => $profile->toArray()], $this->successStatus);
+        $cicle->delete();
+        return response()->json(['Cicle' => $cicle->toArray()], $this->successStatus);
     }
+
 }

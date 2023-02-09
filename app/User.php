@@ -17,7 +17,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'firstname','surname', 'email','type', 'password','boscoins','address','mobile','assessment',
+        'firstname','surname', 'email','type', 'password','boscoins','address','mobile','assessment','cicle_id',
     ];
 
     /**
@@ -41,5 +41,10 @@ class User extends Authenticatable
      public function tasks()
      {
          return $this->hasMany(Task::class);
+     }
+
+     public function cicles()
+     {
+         return $this->belongsTo(Cicle::class);
      }
 }

@@ -72,18 +72,6 @@ class TaskController extends Controller
         }
         return response()->json(['Tarea' => $task->toArray()], $this->successStatus);
     }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
     /**
      * Update the specified resource in storage.
      *
@@ -131,4 +119,18 @@ class TaskController extends Controller
         $task->delete();
         return response()->json(['Tarea' => $task->toArray()], $this->successStatus);
     }
+    public function getTasks($id)
+{
+    $task = Task::where('profile_id', $id)->first();
+    if (!$task) {
+        return response()->json(['message' => 'No se encontró la tarea con el id especificado.'], 404);
+    }
+
+    $tasks = Task::where('profile_id', $id)->get();
+    if ($tasks->isEmpty()) {
+        return response()->json(['message' => 'Este perfil no tiene tareas asociadas.'], 200);
+    }
+
+    return response()->json(['tasks' => $tasks], 200);
+}
 }

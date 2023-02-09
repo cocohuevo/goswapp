@@ -15,8 +15,9 @@ class Profile extends Model
     protected $fillable =[
         'name',
     ];
-    public function tasks()
+
+    public function cicle()
     {
-        return $this->hasMany(Task::class);
+        return $this->hasOne(Cicle::class);
     }
 }

@@ -32,3 +32,9 @@ Route::middleware('auth:api')->group( function () {
 Route::middleware('auth:api')->group( function () {
 	Route::resource('profiles', 'API\ProfileController');
 });
+
+Route::middleware('auth:api')->group( function () {
+	Route::resource('cicles', 'API\CicleController');
+});
+
+Route::get('/cicles/{id}/tasks', 'API\TaskController@getTasks');

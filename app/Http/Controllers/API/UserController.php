@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\User;
 use App\Task;
+use App\Cicle;
 use Validator;
 use Illuminate\Support\Facades\Auth;
 class UserController extends Controller

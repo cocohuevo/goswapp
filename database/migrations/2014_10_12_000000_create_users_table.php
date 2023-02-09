@@ -20,10 +20,11 @@ class CreateUsersTable extends Migration
             $table->string('email')->unique();
             $table->string('type');
             $table->string('password');
-            $table->integer('boscoins');
-            $table->string('address');
-            $table->string('mobile');
-            $table->integer('assessment');
+            $table->integer('boscoins')->nullable();
+            $table->string('address')->nullable();
+            $table->string('mobile')->nullable();
+            $table->integer('assessment')->nullable();
+            $table->bigInteger('cicle_id')->unsigned()->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
