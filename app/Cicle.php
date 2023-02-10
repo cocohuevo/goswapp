@@ -13,19 +13,19 @@ class Cicle extends Model
     protected $fillable =[
         'name', 'description','profile_id',
     ];
-    public function users()
+    public function students()
     {
-        return $this->hasMany(Task::class);
+        return $this->hasMany(Student::class);
+    }
+
+    public function teachers()
+    {
+        return $this->hasMany(Teacher::class);
     }
 
     public function tasks()
     {
         return $this->hasMany(Task::class);
-    }
-
-    public function profile()
-    {
-        return $this->belongsTo(Profile::class);
     }
     
 }

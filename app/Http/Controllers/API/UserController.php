@@ -3,8 +3,6 @@ namespace App\Http\Controllers\API;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\User;
-use App\Task;
-use App\Cicle;
 use Validator;
 use Illuminate\Support\Facades\Auth;
 class UserController extends Controller
@@ -33,7 +31,6 @@ class UserController extends Controller
             'firstname' => 'required',
             'surname' => 'required',
             'email' => 'required|email',
-            'type' => 'required',
             'password' => 'required',
 
         ]);
@@ -72,7 +69,6 @@ class UserController extends Controller
             'firstname' => 'required',
             'surname' => 'required',
             'email' => 'required|email',
-            'type' => 'required',
             'password' => 'required',
         ]);
 
@@ -82,12 +78,10 @@ class UserController extends Controller
         $user->firstname= $input['firstname'];
         $user->surname = $input['surname'];
         $user->email = $input['email'];
-        $user->type = $input['type'];
         $user->password = $input['password'];   
         $user->boscoins= $input['boscoins'];
         $user->address = $input['address'];
         $user->mobile = $input['mobile'];
-        $user->assessment = $input['assessment'];  
         $user['password'] = bcrypt($user['password']);
         $user->save();
 

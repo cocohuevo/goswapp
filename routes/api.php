@@ -29,12 +29,6 @@ Route::middleware('auth:api')->group( function () {
 	Route::resource('users', 'API\UserController');
 });
 
-Route::middleware('auth:api')->group( function () {
-	Route::resource('profiles', 'API\ProfileController');
-});
-
-
 Route::resource('cicles', 'API\CicleController');
-
 
 Route::get('/cicles/{id}/tasks', 'API\TaskController@getTasks');

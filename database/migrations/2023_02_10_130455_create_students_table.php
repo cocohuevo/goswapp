@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateTasksTable extends Migration
+class CreateStudentsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,16 +13,16 @@ class CreateTasksTable extends Migration
      */
     public function up()
     {
-        Schema::create('tasks', function (Blueprint $table) {
-            $table->engine = 'InnoDB';
+        Schema::create('students', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->integer('num_boscoins');
-            $table->string('description');
+            $table->string('firstname');
+            $table->string('surname');
+            $table->string('email')->unique();
+            $table->string('password');
+            $table->string('address')->nullable();
+            $table->string('mobile')->nullable();
             $table->bigInteger('cicle_id')->unsigned();
             $table->foreign('cicle_id')->references('id')->on('cicles');
-            $table->bigInteger('user_id')->unsigned();
-            $table->foreign('user_id')->references('id')->on('users');
-            $table->float('grade')->nullable();
             $table->timestamps();
         });
     }
@@ -34,6 +34,6 @@ class CreateTasksTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('tasks');
+        Schema::dropIfExists('students');
     }
 }

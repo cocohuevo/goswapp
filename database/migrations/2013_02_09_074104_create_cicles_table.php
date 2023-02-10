@@ -17,7 +17,6 @@ class CreateCiclesTable extends Migration
             $table->bigIncrements('id');
             $table->string('name');
             $table->string('description');
-            $table->bigInteger('profile_id')->unsigned();
             $table->timestamps();
         });
     }

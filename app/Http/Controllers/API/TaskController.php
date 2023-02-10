@@ -24,16 +24,6 @@ class TaskController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -43,13 +33,8 @@ class TaskController extends Controller
     {
         $input = $request->all();
         $validator = Validator::make($input, [
-            'num_boscoins'=>'required',
             'description'=>'required',
-            'date_request'=>'required',
-            'date_completian'=>'required',
             'type'=>'required',
-            'user_id'=>'required',
-            'profile_id'=>'required',
         ]);
         if($validator->fails()){
             return response()->json(['error' => $validator->errors()], 401);       
@@ -85,11 +70,6 @@ class TaskController extends Controller
         $validator = Validator::make($input, [
             'num_boscoins'=>'required',
             'description'=>'required',
-            'date_request'=>'required',
-            'date_completian'=>'required',
-            'type'=>'required',
-            'user_id'=>'required',
-            'profile_id'=>'required',
         ]);
 
         if($validator->fails()){
@@ -97,12 +77,6 @@ class TaskController extends Controller
         }
         $task->num_boscoins= $input['num_boscoins'];
         $task->description = $input['description'];
-        $task->date_request = $input['date_request'];
-        $task->date_completian = $input['date_completian'];
-        $task->type = $input['type'];   
-        $task->user_id = $input['user_id'];
-        $task->profile_id = $input['profile_id'];
-
         $task->save();
 
         return response()->json(['Tarea' => $task->toArray()], $this->successStatus);
@@ -121,16 +95,6 @@ class TaskController extends Controller
     }
     public function getTasks($id)
 {
-    $task = Task::where('profile_id', $id)->first();
-    if (!$task) {
-        return response()->json(['message' => 'No se encontró la tarea con el id especificado.'], 404);
-    }
-
-    $tasks = Task::where('profile_id', $id)->get();
-    if ($tasks->isEmpty()) {
-        return response()->json(['message' => 'Este perfil no tiene tareas asociadas.'], 200);
-    }
-
-    return response()->json(['tasks' => $tasks], 200);
+    
 }
 }
