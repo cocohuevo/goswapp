@@ -11,7 +11,7 @@ class Cicle extends Model
     public $timestamps=true;
 
     protected $fillable =[
-        'name', 'description','profile_id',
+        'name', 'description',
     ];
     public function students()
     {

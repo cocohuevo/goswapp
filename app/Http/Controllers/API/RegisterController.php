@@ -20,6 +20,7 @@ class RegisterController extends Controller {
         'firstname' => 'required|string|max:255',
         'email' => 'required|email|unique:users',
         'password' => 'required|string|min:6',
+        'type' => 'required|string',
     ], [
         'firstname.required' => 'El campo Nombre es obligatorio.',
         'email.required' => 'El campo Correo electrónico es obligatorio.',
@@ -28,7 +29,6 @@ class RegisterController extends Controller {
         'password.required' => 'El campo Contraseña es obligatorio.',
         'password.min' => 'La Contraseña debe tener al menos 6 caracteres.',
     ]);
-
     if ($validator->fails()) {
         return response()->json(['error' => $validator->errors()], 400);
     }

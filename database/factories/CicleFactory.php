@@ -9,6 +9,5 @@ $factory->define(Cicle::class, function (Faker $faker) {
     return [
         'name' => $faker->name,
         'description' => $faker->word,
-        'profile_id' => $faker->randomDigitNot(0),
     ];
 });

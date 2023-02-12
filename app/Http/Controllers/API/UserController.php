@@ -32,6 +32,7 @@ class UserController extends Controller
             'surname' => 'required',
             'email' => 'required|email',
             'password' => 'required',
+            'type' => 'required',
 
         ]);
         if($validator->fails()) {
@@ -70,6 +71,7 @@ class UserController extends Controller
             'surname' => 'required',
             'email' => 'required|email',
             'password' => 'required',
+            'type' => 'required',
         ]);
 
         if($validator->fails()){
@@ -82,6 +84,7 @@ class UserController extends Controller
         $user->boscoins= $input['boscoins'];
         $user->address = $input['address'];
         $user->mobile = $input['mobile'];
+        $user->type = $input['type'];
         $user['password'] = bcrypt($user['password']);
         $user->save();
 

@@ -34,7 +34,10 @@ class TaskController extends Controller
         $input = $request->all();
         $validator = Validator::make($input, [
             'description'=>'required',
-            'type'=>'required',
+            'num_boscoins'=>'required',
+            'user_id'=>'required',
+            'cicle_id'=>'required',
+            
         ]);
         if($validator->fails()){
             return response()->json(['error' => $validator->errors()], 401);       
@@ -77,6 +80,9 @@ class TaskController extends Controller
         }
         $task->num_boscoins= $input['num_boscoins'];
         $task->description = $input['description'];
+        $task->user_id= $input['user_id'];
+        $task->cicle_id = $input['cicle_id'];
+        $task->grade= $input['grade'];
         $task->save();
 
         return response()->json(['Tarea' => $task->toArray()], $this->successStatus);
