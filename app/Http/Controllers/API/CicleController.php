@@ -80,10 +80,13 @@ class CicleController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Cicle $cicle)
     {
-        $cicle->delete();
-        return response()->json(['Cicle' => $cicle->toArray()], $this->successStatus);
+        $cicle->teachers()->delete(); // eliminar tareas relacionadas con el ciclo
+        $cicle->tasks()->delete(); // eliminar tareas relacionadas con el ciclo
+        $cicle->students()->delete(); // eliminar estudiantes relacionados con el ciclo
+        $cicle->delete(); // eliminar el ciclo
+        return response()->json(['Ciclo' => $cicle->toArray()], $this->successStatus);
     }
 
 }

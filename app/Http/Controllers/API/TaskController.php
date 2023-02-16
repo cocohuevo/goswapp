@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Task;
+use App\Cicle;
 use App\Profile;
 use Validator;
 
@@ -99,8 +100,33 @@ class TaskController extends Controller
         $task->delete();
         return response()->json(['Tarea' => $task->toArray()], $this->successStatus);
     }
-    public function getTasks($id)
+    public function tasksByCicle($cicleNumer)
+    {
+        $tasks = Task::where('cicle_id', $cicleNumer)->get();
+        return response()->json($tasks);
+    }
+
+    public function assignCicleToTask($taskId, $cicleId)
 {
-    
+    $task = Task::findOrFail($taskId);
+    $cicle = Cicle::findOrFail($cicleId);
+    $task->cicle()->associate($cicle);
+    $task->save();
+    return response()->json([
+        'message' => 'Ciclo asignado a la tarea correctamente',
+        'task' => $task
+    ]);
 }
+
+public function rateTask($taskId, Request $request)
+{
+    $task = Task::findOrFail($taskId);
+    $task->grade = $request->input('grade');
+    $task->save();
+    return response()->json([
+        'message' => 'Tarea valorada correctamente',
+        'task' => $task
+    ]);
+}
+
 }

@@ -4,10 +4,10 @@ namespace App\Http\Controllers\API;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Student;
-use Validator;
-use Illuminate\Support\Facades\Auth;
-class StudentController extends Controller
+use App\TaskAssignment;
+use App\Task;
+
+class TaskAssignmentController extends Controller
 {
     public $successStatus = 200;
     /**
@@ -17,8 +17,8 @@ class StudentController extends Controller
      */
     public function index()
     {
-        $students = Student::all();
-        return response()->json(['Estudiantes' => $students->toArray()], $this->successStatus);
+        $taskAssignments = TaskAssignment::all();
+        return response()->json(['Solicitudes de tareas' => $taskAssignments->toArray()], $this->successStatus);
     }
 
     /**
@@ -39,22 +39,7 @@ class StudentController extends Controller
      */
     public function store(Request $request)
     {
-        $input = $request->all();
-        $validator = Validator::make($input, [
-            'firstname' => 'required',
-            'surname' => 'required',
-            'email' => 'required|email',
-            'password' => 'required',
-            'type' => 'required',
-            'cicle_id' => 'required',
-
-        ]);
-        if($validator->fails()) {
-            return response()->json(['error' => $validator->errors()], 401);       
-        }
-        $input['password'] = bcrypt($input['password']);
-        $student = Student::create($input);
-        return response()->json(['Estudiante' => $student->toArray()], $this->successStatus);
+        //
     }
 
     /**
@@ -102,6 +87,23 @@ class StudentController extends Controller
         //
     }
 
+    public function assignTaskToStudent($userId, $taskId)
+{
+    if (!auth()->check()) {
+        return response()->json(['error' => 'Unauthorized'], 401);
+    }else{
+        $cicleId=Task::find($taskId)->cicleId;
+    $assignment = new TaskAssignment;
+    $assignment->student_id = $userId;
+    $assignment->task_id = $taskId;
+    $assignment->teacher_id = auth()->user()->id;
+    $assignment->assigned_at = now();
+    $assignment->save();
+
+    return response()->json(['message' => 'Tarea asignada al alumno']);
+    }
     
+}
+
 
 }

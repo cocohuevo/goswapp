@@ -11,7 +11,7 @@ class Teacher extends Model
     public $timestamps=true;
 
     protected $fillable = [
-        'firstname','surname', 'email', 'password','address','mobile','ciclo_id',
+        'firstname','surname', 'email', 'password','type','address','mobile','cicle_id',
     ];
     
     public function tasks()

@@ -4,9 +4,12 @@ namespace App\Http\Controllers\API;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-
+use App\Teacher;
+use Validator;
+use Illuminate\Support\Facades\Auth;
 class TeacherController extends Controller
 {
+    public $successStatus = 200;
     /**
      * Display a listing of the resource.
      *
@@ -14,7 +17,8 @@ class TeacherController extends Controller
      */
     public function index()
     {
-        //
+        $teachers = Teacher::all();
+        return response()->json(['Profesores' => $teachers->toArray()], $this->successStatus);
     }
 
     /**
@@ -35,7 +39,22 @@ class TeacherController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $input = $request->all();
+        $validator = Validator::make($input, [
+            'firstname' => 'required',
+            'surname' => 'required',
+            'email' => 'required|email',
+            'password' => 'required',
+            'type' => 'required',
+            'cicle_id' => 'required',
+
+        ]);
+        if($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 401);       
+        }
+        $input['password'] = bcrypt($input['password']);
+        $teacher = Teacher::create($input);
+        return response()->json(['Profesor' => $teacher->toArray()], $this->successStatus);
     }
 
     /**

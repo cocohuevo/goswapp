@@ -18,7 +18,7 @@ class CreateTasksTable extends Migration
             $table->bigIncrements('id');
             $table->integer('num_boscoins');
             $table->string('description');
-            $table->bigInteger('cicle_id')->unsigned();
+            $table->bigInteger('cicle_id')->unsigned()->nullable();
             $table->foreign('cicle_id')->references('id')->on('cicles');
             $table->bigInteger('user_id')->unsigned();
             $table->foreign('user_id')->references('id')->on('users');
