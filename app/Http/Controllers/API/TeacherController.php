@@ -22,16 +22,6 @@ class TeacherController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -45,6 +35,7 @@ class TeacherController extends Controller
             'surname' => 'required',
             'email' => 'required|email',
             'password' => 'required',
+            'mobile' => 'required',
             'type' => 'required',
             'cicle_id' => 'required',
 
@@ -65,18 +56,11 @@ class TeacherController extends Controller
      */
     public function show($id)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
+        $teacher = Teacher::find($id);
+        if (is_null($teacher)) {
+            return response()->json(['error' => $validator->errors()], 401);
+        }
+        return response()->json(['Profesor' => $teacher->toArray()], $this->successStatus);
     }
 
     /**
@@ -88,7 +72,32 @@ class TeacherController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $input = $request->all();
+        $validator = Validator::make($input, [
+            'firstname' => 'required',
+            'surname' => 'required',
+            'mobile' => 'required',
+            'email' => 'required|email',
+            'password' => 'required',
+            'type' => 'required',
+            'boscoins'=>'required',
+        ]);
+
+        if($validator->fails()){
+            return response()->json(['error' => $validator->errors()], 401);       
+        }
+        $teacher->firstname= $input['firstname'];
+        $teacher->surname = $input['surname'];
+        $teacher->email = $input['email'];
+        $teacher->password = $input['password'];   
+        $teacher->address = $input['address'];
+        $teacher->boscoins= $input['boscoins'];
+        $teacher->mobile = $input['mobile'];
+        $teacher->type = $input['type'];
+        $teacher['password'] = bcrypt($teacher['password']);
+        $teacher->save();
+
+        return response()->json(['Usuario' => $teacher->toArray()], $this->successStatus);
     }
 
     /**
@@ -99,6 +108,7 @@ class TeacherController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $teacher->delete();
+        return response()->json(['Profesor' => $teacher->toArray()], $this->successStatus);
     }
 }

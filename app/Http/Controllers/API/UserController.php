@@ -69,6 +69,7 @@ class UserController extends Controller
         $validator = Validator::make($input, [
             'firstname' => 'required',
             'surname' => 'required',
+            'mobile' => 'required',
             'email' => 'required|email',
             'password' => 'required',
             'type' => 'required',
@@ -81,7 +82,6 @@ class UserController extends Controller
         $user->surname = $input['surname'];
         $user->email = $input['email'];
         $user->password = $input['password'];   
-        $user->boscoins= $input['boscoins'];
         $user->address = $input['address'];
         $user->mobile = $input['mobile'];
         $user->type = $input['type'];

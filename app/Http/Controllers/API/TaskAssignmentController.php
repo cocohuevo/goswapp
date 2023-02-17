@@ -22,16 +22,6 @@ class TaskAssignmentController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -39,7 +29,18 @@ class TaskAssignmentController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $input = $request->all();
+        $validator = Validator::make($input, [
+            'task_id'=>'required',
+            'user_id'=>'required',
+            'cicle_id'=>'required',
+            
+        ]);
+        if($validator->fails()){
+            return response()->json(['error' => $validator->errors()], 401);       
+        }
+        $taskAssignments = TaskAssignment::create($input);
+        return response()->json(['Solicitudes de tareas' => $taskAssignments->toArray()], $this->successStatus);
     }
 
     /**
@@ -50,18 +51,11 @@ class TaskAssignmentController extends Controller
      */
     public function show($id)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
+        $taskAssignment = TaskAssignments::find($id);
+        if (is_null($taskAssignment)) {
+            return response()->json(['error' => $validator->errors()], 401);
+        }
+        return response()->json(['Solicitud de tarea' => $taskAssignment->toArray()], $this->successStatus);
     }
 
     /**
@@ -71,9 +65,28 @@ class TaskAssignmentController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, TaskAssignment $taskAssignment)
     {
-        //
+        $input = $request->all();
+        $validator = Validator::make($input, [
+            'task_id'=>'required',
+            'user_id'=>'required',
+            'cicle_id'=>'required',
+        ]);
+
+        if($validator->fails()){
+            return response()->json(['error' => $validator->errors()], 401);       
+        }
+        $taskAssignment->task_id= $input['task_id'];
+        $taskAssignment->user_id = $input['user_id'];
+        $taskAssignment->cicle_id= $input['cicle_id'];
+        $taskAssignment->assigned_at = $input['assigned_at'];
+        $taskAssignment->due_date= $input['due_date'];
+        $taskAssignment->completed_at = $input['completed_at'];
+        $taskAssignment->feedback= $input['feedback'];
+        $taskAssignment->save();
+
+        return response()->json(['Solicitud de tarea' => $taskAssignment->toArray()], $this->successStatus);
     }
 
     /**
@@ -82,9 +95,10 @@ class TaskAssignmentController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(TaskAssignment $taskAssignment)
     {
-        //
+        $taskAssignment->delete();
+        return response()->json(['Solicitud de tarea borrada' => $taskAssignment->toArray()], $this->successStatus);
     }
 
     public function assignTaskToStudent($userId, $taskId)

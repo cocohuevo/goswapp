@@ -22,16 +22,6 @@ class StudentController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -65,18 +55,12 @@ class StudentController extends Controller
      */
     public function show($id)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
+        $student = Student::find($id);
+        if (is_null($student)) {
+            return response()->json(['error' => $validator->errors()], 401);
+        }
+        return response()->json(['Estudiante' => $student->toArray()], $this->successStatus);
+        
     }
 
     /**
@@ -88,7 +72,32 @@ class StudentController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $input = $request->all();
+        $validator = Validator::make($input, [
+            'firstname' => 'required',
+            'surname' => 'required',
+            'mobile' => 'required',
+            'email' => 'required|email',
+            'password' => 'required',
+            'type' => 'required',
+            'boscoins'=>'required',
+        ]);
+
+        if($validator->fails()){
+            return response()->json(['error' => $validator->errors()], 401);       
+        }
+        $student->firstname= $input['firstname'];
+        $student->surname = $input['surname'];
+        $student->email = $input['email'];
+        $student->password = $input['password'];   
+        $student->address = $input['address'];
+        $student->boscoins= $input['boscoins'];
+        $student->mobile = $input['mobile'];
+        $student->type = $input['type'];
+        $student['password'] = bcrypt($student['password']);
+        $student->save();
+
+        return response()->json(['Usuario' => $student->toArray()], $this->successStatus);
     }
 
     /**
@@ -99,7 +108,8 @@ class StudentController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $student->delete();
+        return response()->json(['Estudiante' => $student->toArray()], $this->successStatus);
     }
 
     
