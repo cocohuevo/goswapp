@@ -16,6 +16,7 @@ class CreateTasksTable extends Migration
         Schema::create('tasks', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->bigIncrements('id');
+            $table->string('title');
             $table->integer('num_boscoins');
             $table->string('description');
             $table->bigInteger('cicle_id')->unsigned()->nullable();
@@ -23,6 +24,7 @@ class CreateTasksTable extends Migration
             $table->bigInteger('user_id')->unsigned();
             $table->foreign('user_id')->references('id')->on('users');
             $table->float('grade')->nullable();
+            $table->string('imagen');
             $table->timestamps();
         });
     }

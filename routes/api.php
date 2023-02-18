@@ -32,8 +32,10 @@ Route::middleware('auth:api')->group( function () {
 	Route::resource('users', 'API\UserController');
 });
 
-
+Route::middleware('auth:api')->group( function () {
 	Route::resource('students', 'API\StudentController');
+});
+
 
 Route::middleware('auth:api')->group( function () {
 	Route::resource('teachers', 'API\TeacherController');

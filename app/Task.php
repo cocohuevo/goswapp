@@ -11,7 +11,7 @@ class Task extends Model
     public $timestamps=true;
 
     protected $fillable =[
-        'num_boscoins','description','cicle_id','user_id','grade',
+        'num_boscoins','description','cicle_id','user_id','grade','title','imagen',
     ];
 
     public function user()

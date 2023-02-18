@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Student;
 use Validator;
 use Illuminate\Support\Facades\Auth;
+
 class StudentController extends Controller
 {
     public $successStatus = 200;
