@@ -20,7 +20,7 @@ class RegisterController extends Controller {
         'firstname' => 'required|string|max:255',
         'email' => 'required|email|unique:users',
         'password' => 'required|string|min:6',
-        'type' => 'required|string',
+        'mobile' => 'required',
     ], [
         'firstname.required' => 'El campo Nombre es obligatorio.',
         'email.required' => 'El campo Correo electrónico es obligatorio.',
@@ -34,6 +34,7 @@ class RegisterController extends Controller {
     }
 
     $input = $request->all();
+    $input['type'] = 'user';
     $input['password'] = Hash::make($input['password']);
     $user = User::create($input);
     //$token = $user->createToken('MyApp')->accessToken;

@@ -35,7 +35,7 @@ class StudentController extends Controller
             'surname' => 'required',
             'email' => 'required|email',
             'password' => 'required',
-            'type' => 'required',
+            'mobile' => 'required',
             'cicle_id' => 'required',
 
         ]);
@@ -43,6 +43,7 @@ class StudentController extends Controller
             return response()->json(['error' => $validator->errors()], 401);       
         }
         $input['password'] = bcrypt($input['password']);
+        $input['type'] = 'student';
         $student = Student::create($input);
         return response()->json(['Estudiante' => $student->toArray()], $this->successStatus);
     }
