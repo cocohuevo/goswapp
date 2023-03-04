@@ -42,15 +42,15 @@ class TaskController extends Controller
         'cicle_id' => 'nullable|integer',
     ]);
 
-    if($validator->fails()){
+    if ($validator->fails()) {
         return response()->json(['error' => $validator->errors()], 401);
     }
 
     $task = new Task;
     $task->title = $input['title'];
     $task->description = $input['description'];
-    $task->num_boscoins= $input['num_boscoins'];
-    $task->user_id= $input['user_id'];
+    $task->num_boscoins = $input['num_boscoins'];
+    $task->user_id = $input['user_id'];
     $task->cicle_id = $input['cicle_id'];
     $task->comentario = $input['comentario'];
     $task->direccion = $input['direccion'];
@@ -58,13 +58,11 @@ class TaskController extends Controller
     $task->valoracion_cliente = $input['valoracion_cliente'];
 
     // Guardar la imagen si se ha enviado
-    if ($request->has('imagen.base64')) {
-        $imagen = $request->input('imagen.base64');
-        $extension = explode('/', mime_content_type($imagen))[1];
-        $nombre_imagen = time() . '.' . $extension;
-        $ruta_imagen = public_path('images/' . $nombre_imagen);
-        file_put_contents($ruta_imagen, base64_decode($imagen));
-        $task->imagen = $nombre_imagen; 
+    if ($request->hasFile('imagen')) {
+        $imagen = $request->file('imagen');
+        $nombre_imagen = time() . '.' . $imagen->getClientOriginalExtension();
+        $ruta_imagen = $imagen->storeAs('public/images', $nombre_imagen);
+        $task->imagen = 'images/' . $nombre_imagen; // Almacenar la ruta relativa a la imagen
     }
 
     $task->save();
@@ -128,13 +126,12 @@ class TaskController extends Controller
         $task->delete();
         return response()->json(['Tarea' => $task->toArray()], $this->successStatus);
     }
-    public function tasksByCicle($cicleNumer)
-    {
-        $tasks = Task::where('cicle_id', $cicleNumer)->pluck('id', 'title','description','num_boscoins','user_id','cicle_id','comentario','direccion','telefono','valoracion_cliente');
-        return response()->json($tasks);
-    }
-
-    public function assignCicleToTask($taskId, $cicleId)
+    public function tasksByCicle($cicleNumber)
+{
+    $tasks = Task::where('cicle_id', $cicleNumber)->get()->keyBy('id')->toArray();
+    return $tasks;
+}  
+ public function assignCicleToTask($taskId, $cicleId)
 {
     $task = Task::findOrFail($taskId);
     $cicle = Cicle::findOrFail($cicleId);
