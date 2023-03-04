@@ -130,7 +130,7 @@ class TaskController extends Controller
     }
     public function tasksByCicle($cicleNumer)
     {
-        $tasks = Task::where('cicle_id', $cicleNumer)->pluck('title', 'id');
+        $tasks = Task::where('cicle_id', $cicleNumer)->pluck('id', 'title','description','num_boscoins','user_id','cicle_id','comentario','direccion','telefono','valoracion_cliente');
         return response()->json($tasks);
     }
 
