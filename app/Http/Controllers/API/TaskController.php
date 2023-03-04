@@ -58,12 +58,14 @@ class TaskController extends Controller
     $task->valoracion_cliente = $input['valoracion_cliente'];
 
     // Guardar la imagen si se ha enviado
+    // Guardar la imagen si se ha enviado
     if ($request->hasFile('imagen')) {
         $imagen = $request->file('imagen');
         $nombre_imagen = time() . '.' . $imagen->getClientOriginalExtension();
-        $ruta_imagen = $imagen->storeAs('public/images', $nombre_imagen);
+        $ruta_imagen = $imagen->storeAs('public/images/', $nombre_imagen);
         $task->imagen = 'images/' . $nombre_imagen; // Almacenar la ruta relativa a la imagen
     }
+
 
     $task->save();
 
