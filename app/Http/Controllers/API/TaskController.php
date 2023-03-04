@@ -31,22 +31,46 @@ class TaskController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
-    {
-        $input = $request->all();
-        $validator = Validator::make($input, [
-            'titule'=>'required',
-            'description'=>'required',
-            'num_boscoins'=>'required',
-            'user_id'=>'required',
-            'cicle_id'=>'required',
-            
-        ]);
-        if($validator->fails()){
-            return response()->json(['error' => $validator->errors()], 401);       
-        }
-        $task = Task::create($input);
-        return response()->json(['Tarea' => $task->toArray()], $this->successStatus);
+{
+    $input = $request->all();
+    $validator = Validator::make($input, [
+        'title' => 'required',
+        'description' => 'required',
+        'user_id' => 'required',
+        'imagen' => 'nullable',
+        'num_boscoins' => 'nullable|integer',
+        'cicle_id' => 'nullable|integer',
+    ]);
+
+    if($validator->fails()){
+        return response()->json(['error' => $validator->errors()], 401);
     }
+
+    $task = new Task;
+    $task->title = $input['title'];
+    $task->description = $input['description'];
+    $task->num_boscoins= $input['num_boscoins'];
+    $task->user_id= $input['user_id'];
+    $task->cicle_id = $input['cicle_id'];
+    $task->comentario = $input['comentario'];
+    $task->direccion = $input['direccion'];
+    $task->telefono = $input['telefono'];
+    $task->valoracion_cliente = $input['valoracion_cliente'];
+
+    // Guardar la imagen si se ha enviado
+    if ($request->has('imagen.base64')) {
+        $imagen = $request->input('imagen.base64');
+        $extension = explode('/', mime_content_type($imagen))[1];
+        $nombre_imagen = time() . '.' . $extension;
+        $ruta_imagen = public_path('images/' . $nombre_imagen);
+        file_put_contents($ruta_imagen, base64_decode($imagen));
+        $task->imagen = $nombre_imagen; 
+    }
+
+    $task->save();
+
+    return response()->json(['Tarea' => $task->toArray()], $this->successStatus);
+}
 
     /**
      * Display the specified resource.
@@ -106,7 +130,7 @@ class TaskController extends Controller
     }
     public function tasksByCicle($cicleNumer)
     {
-        $tasks = Task::where('cicle_id', $cicleNumer)->get();
+        $tasks = Task::where('cicle_id', $cicleNumer)->pluck('title', 'id');
         return response()->json($tasks);
     }
 
@@ -129,7 +153,14 @@ public function rateTask($taskId, Request $request)
     $task->save();
     return response()->json([
         'message' => 'Tarea valorada correctamente',
-        'task' => $task
+        'task' => [
+            'id' => $task->id,
+            'name' => $task->name,
+            'description' => $task->description,
+            'grade' => (double) $task->grade,
+            'created_at' => $task->created_at,
+            'updated_at' => $task->updated_at
+        ]
     ]);
 }
 

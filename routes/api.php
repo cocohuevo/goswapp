@@ -21,6 +21,8 @@ Route::post('register', 'API\RegisterController@register');
 
 Route::post('login', 'API\RegisterController@login');
 
+Route::post('tasks/{id}/comments', 'API\CommentController@store')->middleware('auth:api');
+
 Route::middleware('auth:api')->group( function () {
 	Route::resource('tasks', 'API\TaskController');
 	Route::get('/tasks/cicle/{cicleNumber}', 'API\TaskController@tasksByCicle');
