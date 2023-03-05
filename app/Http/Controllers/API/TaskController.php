@@ -155,6 +155,7 @@ public function rateTask($taskId, Request $request)
 {
     $task = Task::findOrFail($taskId);
     $task->grade = $request->input('grade');
+    $task->grade = number_format((double)$task->grade, 2, '.', '');
     $task->save();
     return response()->json([
         'message' => 'Tarea valorada correctamente',
@@ -162,11 +163,12 @@ public function rateTask($taskId, Request $request)
             'id' => $task->id,
             'name' => $task->name,
             'description' => $task->description,
-            'grade' => (double) $task->grade,
+            'grade' => floatval($task->grade),
             'created_at' => $task->created_at,
             'updated_at' => $task->updated_at
         ]
     ]);
 }
+
 
 }
