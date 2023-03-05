@@ -41,11 +41,11 @@ class TaskController extends Controller
         'imagen' => 'nullable',
         'num_boscoins' => 'nullable|integer',
         'cicle_id' => 'nullable|integer',
-	'comment' => 'nullable',
+	    'comment' => 'nullable',
         'client_address' => 'required',
         'client_phone' => 'required',
         'client_rating' => 'nullable|numeric',
-	'completion_date' => 'nullable|date',
+	    'completion_date' => 'nullable|date',
     ]);
 
     if ($validator->fails()) {
