@@ -183,10 +183,11 @@ public function rateTask($taskId, Request $request)
 public function rateCompletedTask(Request $request, $id)
 {
     $user = Auth::user();
-    $task = Task::findOrFail($id);
+    $completedTask = CompletedTask::where('task_id', $id)->where('user_id', $user->id)->firstOrFail();
 
-    if (!empty($task->completion_date)) {
+    if (!empty($completedTask->completion_date)) {
         // Validar si el usuario es el creador de la tarea
+        $task = $completedTask->task;
         if ($task->user_id != $user->id) {
             return response()->json([
                 'message' => 'Solo el creador de la tarea puede comentarla',
@@ -196,13 +197,20 @@ public function rateCompletedTask(Request $request, $id)
         $rating = $request->input('rating');
         $comment = $request->input('comment');
 
-        $task->client_rating = $rating;
-        $task->comment = $comment;
-        $task->save();
+        $completedTask->client_rating = $rating;
+        $completedTask->comment = $comment;
+        $completedTask->save();
 
         return response()->json([
-            'message' => 'Tarea valorada y comentada correctamente',
-            'task' => $task,
+            'message' => 'Tarea valorada correctamente',
+            'task' => [
+                'id' => $completedTask->task->id,
+                'name' => $completedTask->task->name,
+                'description' => $completedTask->task->description,
+                'completion_date' => $completedTask->completion_date,
+                'client_rating' => $completedTask->client_rating,
+                'comment' => $completedTask->comment,
+            ],
         ]);
     } else {
         return response()->json([
@@ -210,5 +218,6 @@ public function rateCompletedTask(Request $request, $id)
         ], 400);
     }
 }
+
 
 }
