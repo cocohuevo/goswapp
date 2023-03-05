@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Collection;
 use App\Task;
 use App\Cicle;
 use App\Profile;
@@ -40,6 +41,11 @@ class TaskController extends Controller
         'imagen' => 'nullable',
         'num_boscoins' => 'nullable|integer',
         'cicle_id' => 'nullable|integer',
+	'comment' => 'nullable',
+        'client_address' => 'required',
+        'client_phone' => 'required',
+        'client_rating' => 'nullable|numeric',
+	'completion_date' => 'nullable|date',
     ]);
 
     if ($validator->fails()) {
@@ -49,15 +55,15 @@ class TaskController extends Controller
     $task = new Task;
     $task->title = $input['title'];
     $task->description = $input['description'];
-    $task->num_boscoins = $input['num_boscoins'];
+    $task->num_boscoins = $input['num_boscoins']?? 0;
     $task->user_id = $input['user_id'];
-    $task->cicle_id = $input['cicle_id'];
-    $task->comentario = $input['comentario'];
-    $task->direccion = $input['direccion'];
-    $task->telefono = $input['telefono'];
-    $task->valoracion_cliente = $input['valoracion_cliente'];
+    $task->cicle_id = $input['cicle_id']?? null;
+    $task->completion_date = $input['completion_date']?? null;
+    $task->comment = $input['comment']?? null;
+    $task->client_address = $input['client_address']?? null;
+    $task->client_phone = $input['client_phone']?? null;
+    $task->client_rating = $input['client_rating']?? null;
 
-    // Guardar la imagen si se ha enviado
     // Guardar la imagen si se ha enviado
     if ($request->hasFile('imagen')) {
         $imagen = $request->file('imagen');
@@ -65,7 +71,6 @@ class TaskController extends Controller
         $ruta_imagen = $imagen->storeAs('public/images/', $nombre_imagen);
         $task->imagen = 'images/' . $nombre_imagen; // Almacenar la ruta relativa a la imagen
     }
-
 
     $task->save();
 
@@ -130,10 +135,11 @@ class TaskController extends Controller
     }
     public function tasksByCicle($cicleNumber)
 {
-    $tasks = Task::where('cicle_id', $cicleNumber)->get()->keyBy('id')->toArray();
-    return $tasks;
-}  
- public function assignCicleToTask($taskId, $cicleId)
+    $tasks = Task::where('cicle_id', $cicleNumber)->get()->toArray();
+    return [
+        "Tareas del ciclo" => $tasks
+    ];
+} public function assignCicleToTask($taskId, $cicleId)
 {
     $task = Task::findOrFail($taskId);
     $cicle = Cicle::findOrFail($cicleId);
