@@ -21,9 +21,14 @@ class TaskController extends Controller
      */
     public function index()
     {
-        $tasks = Task::all();
-        return response()->json(['Tareas' => $tasks->toArray()], $this->successStatus);
-    }
+    $tasks = Task::all();
+    $tasks = $tasks->map(function($task){
+        $task['grade'] = number_format($task->grade, 2);
+	$task['client_rating'] = number_format($task->grade, 2);
+        return $task;
+    });
+    return response()->json(['Tareas' => $tasks->toArray()], $this->successStatus);
+}
 
     /**
      * Store a newly created resource in storage.
@@ -41,11 +46,11 @@ class TaskController extends Controller
         'imagen' => 'nullable',
         'num_boscoins' => 'nullable|integer',
         'cicle_id' => 'nullable|integer',
-	    'comment' => 'nullable',
+	'comment' => 'nullable',
         'client_address' => 'required',
         'client_phone' => 'required',
         'client_rating' => 'nullable|numeric',
-	    'completion_date' => 'nullable|date',
+	'completion_date' => 'nullable|date',
     ]);
 
     if ($validator->fails()) {
@@ -136,10 +141,15 @@ class TaskController extends Controller
     public function tasksByCicle($cicleNumber)
 {
     $tasks = Task::where('cicle_id', $cicleNumber)->get()->toArray();
+    $tasks = array_map(function($task){
+        $task['grade'] = number_format($task['grade'], 2);
+        $task['client_rating'] = number_format($task['client_rating'], 2);
+        return $task;
+    }, $tasks);
     return [
         "Tareas del ciclo" => $tasks
     ];
-} public function assignCicleToTask($taskId, $cicleId)
+}public function assignCicleToTask($taskId, $cicleId)
 {
     $task = Task::findOrFail($taskId);
     $cicle = Cicle::findOrFail($cicleId);
@@ -163,12 +173,42 @@ public function rateTask($taskId, Request $request)
             'id' => $task->id,
             'name' => $task->name,
             'description' => $task->description,
-            'grade' => floatval($task->grade),
+            'grade' => number_format($task->grade, 2),
             'created_at' => $task->created_at,
             'updated_at' => $task->updated_at
         ]
     ]);
 }
 
+public function rateCompletedTask(Request $request, $id)
+{
+    $user = Auth::user();
+    $task = Task::findOrFail($id);
+
+    if (!empty($task->completion_date)) {
+        // Validar si el usuario es el creador de la tarea
+        if ($task->user_id != $user->id) {
+            return response()->json([
+                'message' => 'Solo el creador de la tarea puede comentarla',
+            ], 403);
+        }
+
+        $rating = $request->input('rating');
+        $comment = $request->input('comment');
+
+        $task->client_rating = $rating;
+        $task->comment = $comment;
+        $task->save();
+
+        return response()->json([
+            'message' => 'Tarea valorada y comentada correctamente',
+            'task' => $task,
+        ]);
+    } else {
+        return response()->json([
+            'message' => 'La tarea aún no ha sido completada',
+        ], 400);
+    }
+}
 
 }
