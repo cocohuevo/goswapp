@@ -28,8 +28,7 @@ Route::middleware('auth:api')->group( function () {
 	Route::get('/tasks/cicle/{cicleNumber}', 'API\TaskController@tasksByCicle');
 	Route::put('/tasks/{taskId}/assign-cicle/{cicleId}', 'API\TaskController@assignCicleToTask');
 	Route::put('/tasks/{taskId}/rate', 'API\TaskController@rateTask');
-	Route::put('/tasks/{id}/rate', 'API\TaskController@rateCompletedTask');
-});
+	Route::put('/completed-tasks/{taskId}/rate', 'API\TaskController@rateCompletedTask');});
 
 Route::middleware('auth:api')->group( function () {
 	Route::resource('users', 'API\UserController');
@@ -47,7 +46,7 @@ Route::middleware('auth:api')->group( function () {
 Route::middleware('auth:api')->group( function () {
 	Route::resource('taskAssignments', 'API\TaskAssignmentController');
 	Route::get('/assign-task/{userId}/{taskId}', 'API\TaskAssignmentController@assignTaskToStudent');
+	Route::put('/removeassign-task/{userId}/{taskId}', 'API\TaskAssignmentController@removeTaskFromStudent');
 });
 
 Route::resource('cicles', 'API\CicleController');
-

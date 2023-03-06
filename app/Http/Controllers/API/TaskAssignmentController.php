@@ -119,5 +119,21 @@ class TaskAssignmentController extends Controller
     
 }
 
+public function removeTaskFromStudent($userId, $taskId)
+{
+    if (!auth()->check()) {
+        return response()->json(['error' => 'Unauthorized'], 401);
+    }else{
+        $assignment = TaskAssignment::where('student_id', $userId)
+                                    ->where('task_id', $taskId)
+                                    ->first();
+        if($assignment){
+            $assignment->delete();
+            return response()->json(['message' => 'Tarea desasignada del alumno']);
+        }else{
+            return response()->json(['message' => 'La tarea no está asignada a este alumno']);
+        }
+    }
+}
 
 }
