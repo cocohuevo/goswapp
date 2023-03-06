@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Http\Controllers\API\Auth;
-use Illuminate\Support\Facades\Auth as IlluminateAuth;
+
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Collection;
@@ -22,11 +22,11 @@ class TaskController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index()
-    {
+{
     $tasks = Task::all();
     $tasks = $tasks->map(function($task){
-        $task['grade'] = number_format($task->grade, 2);
-	$task['client_rating'] = number_format($task->client_rating, 2);
+        $task['grade'] = $task->grade !== null ? number_format($task->grade, 2) : null;
+        $task['client_rating'] = $task->client_rating !== null ? number_format($task->client_rating, 2) : null;
         return $task;
     });
     return response()->json(['Tareas' => $tasks->toArray()], $this->successStatus);
@@ -122,6 +122,7 @@ class TaskController extends Controller
         $task->user_id= $input['user_id'];
         $task->cicle_id = $input['cicle_id'];
         $task->grade= $input['grade'];
+	    $task->client_rating = $input['client_rating'];
         $task->title = $input['title'];
         $task->imagen= $input['imagen'];
         $task->save();
