@@ -212,7 +212,7 @@ public function rateCompletedTask(Request $request, $id)
 
     return response()->json([
         'message' => 'Tarea valorada correctamente',
-        'task' => $task,
+        'task' => $task->toArray(),
     ]);
 }
 }
