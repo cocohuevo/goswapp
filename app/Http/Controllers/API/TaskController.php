@@ -122,7 +122,7 @@ class TaskController extends Controller
         $task->user_id= $input['user_id'];
         $task->cicle_id = $input['cicle_id'];
         $task->grade= $input['grade'];
-	    $task->client_rating = $input['client_rating'];
+	$task->client_rating = $input['client_rating'];
         $task->title = $input['title'];
         $task->imagen= $input['imagen'];
         $task->save();
@@ -196,7 +196,7 @@ public function rateCompletedTask(Request $request, $id)
     }
 
     // Validar si la tarea ha sido completada
-    if (empty($task->completed_at)) {
+    if (empty($task->completion_date)) {
         return response()->json([
             'message' => 'La tarea aún no ha sido completada',
         ], 400);
@@ -204,6 +204,7 @@ public function rateCompletedTask(Request $request, $id)
 
     $rating = $request->input('client_rating');
     $comment = $request->input('comment');
+ 
 
     // Actualizar la tarea con el comentario y la valoración
     $task->client_rating = $rating;
