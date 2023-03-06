@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Http\Controllers\API\Auth;
+use Illuminate\Support\Facades\Auth as IlluminateAuth;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Collection;
@@ -24,7 +26,7 @@ class TaskController extends Controller
     $tasks = Task::all();
     $tasks = $tasks->map(function($task){
         $task['grade'] = number_format($task->grade, 2);
-	$task['client_rating'] = number_format($task->grade, 2);
+	$task['client_rating'] = number_format($task->client_rating, 2);
         return $task;
     });
     return response()->json(['Tareas' => $tasks->toArray()], $this->successStatus);
@@ -183,41 +185,33 @@ public function rateTask($taskId, Request $request)
 public function rateCompletedTask(Request $request, $id)
 {
     $user = Auth::user();
-    $completedTask = CompletedTask::where('task_id', $id)->where('user_id', $user->id)->firstOrFail();
+    $task = Task::findOrFail($id);
 
-    if (!empty($completedTask->completion_date)) {
-        // Validar si el usuario es el creador de la tarea
-        $task = $completedTask->task;
-        if ($task->user_id != $user->id) {
-            return response()->json([
-                'message' => 'Solo el creador de la tarea puede comentarla',
-            ], 403);
-        }
-
-        $rating = $request->input('rating');
-        $comment = $request->input('comment');
-
-        $completedTask->client_rating = $rating;
-        $completedTask->comment = $comment;
-        $completedTask->save();
-
+    // Validar si el usuario es el creador de la tarea
+    if ($task->user_id != $user->id) {
         return response()->json([
-            'message' => 'Tarea valorada correctamente',
-            'task' => [
-                'id' => $completedTask->task->id,
-                'name' => $completedTask->task->name,
-                'description' => $completedTask->task->description,
-                'completion_date' => $completedTask->completion_date,
-                'client_rating' => $completedTask->client_rating,
-                'comment' => $completedTask->comment,
-            ],
-        ]);
-    } else {
+            'message' => 'Solo el creador de la tarea puede comentarla',
+        ], 403);
+    }
+
+    // Validar si la tarea ha sido completada
+    if (empty($task->completed_at)) {
         return response()->json([
             'message' => 'La tarea aún no ha sido completada',
         ], 400);
     }
+
+    $rating = $request->input('client_rating');
+    $comment = $request->input('comment');
+
+    // Actualizar la tarea con el comentario y la valoración
+    $task->client_rating = $rating;
+    $task->comment = $comment;
+    $task->save();
+
+    return response()->json([
+        'message' => 'Tarea valorada correctamente',
+        'task' => $task,
+    ]);
 }
-
-
 }
