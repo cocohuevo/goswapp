@@ -4,9 +4,12 @@ namespace App\Http\Controllers\API;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Student;
 use App\TaskAssignment;
 use App\Task;
+use App\User;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 class TaskAssignmentController extends Controller
 {
@@ -106,18 +109,33 @@ class TaskAssignmentController extends Controller
 {
     if (!auth()->check()) {
         return response()->json(['error' => 'Unauthorized'], 401);
-    }else{
-        $cicleId=Task::find($taskId)->cicleId;
-    $assignment = new TaskAssignment;
-    $assignment->student_id = $userId;
-    $assignment->task_id = $taskId;
-    $assignment->save();
+    } else {
+        $student = Student::with('cicle')->find($userId);
+        $assignment = new TaskAssignment;
+        $assignment->student_id = $userId;
+        $assignment->student_name = $student->firstname;
+        $assignment->cicle_student = $student->cicle->name;
+	$assignment->cicle_id = $student->cicle->id;
+        $assignment->task_id = $taskId;
+        $assignment->save();
 
-    return response()->json(['message' => 'Tarea solicitada por el alumno']);
+        return response()->json(['message' => 'Tarea solicitada por el alumno']);
     }
-    
 }
 
+public function getStudentsByTaskId($taskId)
+{
+    $taskAssignments = DB::table('task_assignments')
+        ->join('students', 'students.id', '=', 'task_assignments.student_id')
+        ->select('task_assignments.id', 'task_assignments.student_name', 'students.surname', 'task_assignments.cicle_student','task_assignments.assigned_at')
+        ->where('task_assignments.task_id', $taskId)
+        ->get();
+
+    return response()->json([
+        'Estudiantes que solicitan la tarea con id' => $taskId,
+        'Estudiantes' => $taskAssignments->toArray()
+    ], $this->successStatus);
+}
 public function updateAssignedAt($assignmentId)
 {
     $taskAssignment = TaskAssignment::find($assignmentId);

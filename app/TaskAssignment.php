@@ -8,7 +8,7 @@ class TaskAssignment extends Model
 {
 
     protected $fillable = [
-        'student_id','teacher_id', 'task_id', 'assigned_at','due_date','completed_at','feedback',
+        'student_id', 'student_name', 'cicle_student', 'teacher_id', 'task_id', 'assigned_at','due_date','completed_at','feedback',
     ];
 
     public function student()

@@ -24,9 +24,8 @@ class Task extends Model
         return $this->belongsTo(Cicle::class);
     }
 
-    public function requestedTasks()
+    public function taskAssignments()
     {
-        return $this->hasMany(RequestedTask::class);
+        return $this->hasMany(TaskAssignment::class);
     }
-
 }

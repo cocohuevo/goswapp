@@ -14,6 +14,10 @@ class Student extends Model
         'firstname','surname', 'email', 'password','boscoins','type','address','mobile','cicle_id',
     ];
 
+    public function assignments()
+{
+    return $this->hasMany(TaskAssignment::class);
+}
     public function tasks()
     {
         return $this->hasMany(Task::class);
@@ -22,11 +26,6 @@ class Student extends Model
     public function cicle()
     {
         return $this->belongsTo(Cicle::class);
-    }
-
-    public function requestedTasks()
-    {
-        return $this->hasMany(RequestedTask::class);
     }
     
 }
