@@ -17,7 +17,7 @@ class CreateTaskAssignmentsTable extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('student_id');
             $table->unsignedBigInteger('task_id');
-            $table->unsignedBigInteger('teacher_id');
+            $table->unsignedBigInteger('teacher_id')->nullable();
             $table->dateTime('assigned_at')->nullable();
             $table->dateTime('due_date')->nullable();
             $table->dateTime('completed_at')->nullable();

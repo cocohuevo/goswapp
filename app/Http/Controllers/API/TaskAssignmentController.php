@@ -33,7 +33,6 @@ class TaskAssignmentController extends Controller
         $validator = Validator::make($input, [
             'task_id'=>'required',
             'user_id'=>'required',
-            'cicle_id'=>'required',
             
         ]);
         if($validator->fails()){
