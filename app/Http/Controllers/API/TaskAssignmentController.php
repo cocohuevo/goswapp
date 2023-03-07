@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\TaskAssignment;
 use App\Task;
+use Illuminate\Support\Facades\Validator;
 
 class TaskAssignmentController extends Controller
 {
@@ -33,6 +34,7 @@ class TaskAssignmentController extends Controller
         $validator = Validator::make($input, [
             'task_id'=>'required',
             'user_id'=>'required',
+            'cicle_id'=>'required',
             
         ]);
         if($validator->fails()){
@@ -100,7 +102,7 @@ class TaskAssignmentController extends Controller
         return response()->json(['Solicitud de tarea borrada' => $taskAssignment->toArray()], $this->successStatus);
     }
 
-    public function assignTaskToStudent($userId, $taskId)
+    public function requestStudentToTask($userId, $taskId)
 {
     if (!auth()->check()) {
         return response()->json(['error' => 'Unauthorized'], 401);
@@ -109,13 +111,36 @@ class TaskAssignmentController extends Controller
     $assignment = new TaskAssignment;
     $assignment->student_id = $userId;
     $assignment->task_id = $taskId;
-    $assignment->teacher_id = auth()->user()->id;
-    $assignment->assigned_at = now();
     $assignment->save();
 
-    return response()->json(['message' => 'Tarea asignada al alumno']);
+    return response()->json(['message' => 'Tarea solicitada por el alumno']);
     }
     
+}
+
+public function updateAssignedAt($assignmentId)
+{
+    $taskAssignment = TaskAssignment::find($assignmentId);
+    if (!$taskAssignment) {
+        return response()->json(['error' => 'No se encontro la tarea asignada'], 404);
+    }
+    $taskAssignment->update([
+        'assigned_at' => now()
+    ]);
+    return response()->json(['message' => 'Fecha de asignacion actualizada exitosamente']);
+}
+
+public function unassignTaskFromStudent($assignmentId)
+{
+    $taskAssignment = TaskAssignment::find($assignmentId);
+    if (!$taskAssignment) {
+        return response()->json(['error' => 'No se encontro la tarea asignada'], 404);
+    }
+    $taskAssignment->update([
+        'assigned_at' => null
+    ]);
+    return response()->json(['message' => 'Tarea desasignacion exitosamente']);
+
 }
 
 public function removeTaskFromStudent($userId, $taskId)

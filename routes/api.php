@@ -40,18 +40,20 @@ Route::middleware('auth:api')->group( function () {
 	Route::resource('students', 'API\StudentController');
 });
 
+Route::middleware('auth:api')->group( function () {
+	Route::resource('requested-tasks', 'API\RequestedTaskController');
+});
+
 
 Route::middleware('auth:api')->group( function () {
 	Route::resource('teachers', 'API\TeacherController');
 });
 
 Route::middleware('auth:api')->group( function () {
-	Route::resource('requested-tasks', 'API\RequestedTaskController');
-});
-
-Route::middleware('auth:api')->group( function () {
 	Route::resource('taskAssignments', 'API\TaskAssignmentController');
-	Route::get('/assign-task/{userId}/{taskId}', 'API\TaskAssignmentController@assignTaskToStudent');
+	Route::post('/assign-task/{userId}/{taskId}', 'API\TaskAssignmentController@requestStudentToTask');
+	Route::put('/assign-task/{assignmentId}/update-assigned-at', 'API\TaskAssignmentController@updateAssignedAt');
+	Route::put('/assign-task/{assignmentId}/unassignTaskFromStudent', 'API\TaskAssignmentController@unassignTaskFromStudent');
 	Route::put('/removeassign-task/{userId}/{taskId}', 'API\TaskAssignmentController@removeTaskFromStudent');
 });
 
