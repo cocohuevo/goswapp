@@ -4,9 +4,11 @@ namespace App\Http\Controllers\API;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\RequestedTask;
 
 class RequestedTaskController extends Controller
 {
+    public $successStatus = 200;
     /**
      * Display a listing of the resource.
      *
@@ -14,7 +16,8 @@ class RequestedTaskController extends Controller
      */
     public function index()
     {
-        //
+        $requestedTasks = RequestedTask::all();
+        return response()->json(['Tareas solicitadas' => $requestedTasks->toArray()], $this->successStatus);
     }
 
     /**

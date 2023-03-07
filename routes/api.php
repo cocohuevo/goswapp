@@ -46,6 +46,10 @@ Route::middleware('auth:api')->group( function () {
 });
 
 Route::middleware('auth:api')->group( function () {
+	Route::resource('requested-tasks', 'API\RequestedTaskController');
+});
+
+Route::middleware('auth:api')->group( function () {
 	Route::resource('taskAssignments', 'API\TaskAssignmentController');
 	Route::get('/assign-task/{userId}/{taskId}', 'API\TaskAssignmentController@assignTaskToStudent');
 	Route::put('/removeassign-task/{userId}/{taskId}', 'API\TaskAssignmentController@removeTaskFromStudent');
