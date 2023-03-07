@@ -27,5 +27,10 @@ class Cicle extends Model
     {
         return $this->hasMany(Task::class);
     }
+
+    public function requestedTasks()
+    {
+        return $this->hasMany(RequestedTask::class);
+    }
     
 }

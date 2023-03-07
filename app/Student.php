@@ -23,5 +23,10 @@ class Student extends Model
     {
         return $this->belongsTo(Cicle::class);
     }
+
+    public function requestedTasks()
+    {
+        return $this->hasMany(RequestedTask::class);
+    }
     
 }

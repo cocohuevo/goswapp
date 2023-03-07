@@ -26,5 +26,6 @@ class DatabaseSeeder extends Seeder
         $tasks = factory(App\Task::class, 20)->create();
         $taskAssignments = factory(App\TaskAssignment::class, 20)->create();
         $comments = factory(App\Comment::class, 20)->create();
+        $requestedTasks = factory(App\RequestedTask::class, 10)->create();
     }
 }

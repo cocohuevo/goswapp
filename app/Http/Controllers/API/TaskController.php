@@ -145,14 +145,15 @@ class TaskController extends Controller
 {
     $tasks = Task::where('cicle_id', $cicleNumber)->get()->toArray();
     $tasks = array_map(function($task){
-        $task['grade'] = number_format($task['grade'], 2);
-        $task['client_rating'] = number_format($task['client_rating'], 2);
+        $task['grade'] = isset($task['grade']) ? number_format($task['grade'], 2) : null;
+        $task['client_rating'] = isset($task['client_rating']) ? number_format($task['client_rating'], 2) : null;
         return $task;
     }, $tasks);
     return [
         "Tareas del ciclo" => $tasks
     ];
-}public function assignCicleToTask($taskId, $cicleId)
+}
+public function assignCicleToTask($taskId, $cicleId)
 {
     $task = Task::findOrFail($taskId);
     $cicle = Cicle::findOrFail($cicleId);
@@ -216,4 +217,18 @@ public function rateCompletedTask(Request $request, $id)
         'task' => $task->toArray(),
     ]);
 }
+
+public function completedTask($id, Request $request)
+{
+    $task = Task::find($id);
+    if (is_null($task)) {
+        return response()->json(['error' => 'No se encontro la tarea especificada'], 401);
+    }
+
+    $task->completion_date = now();
+    $task->save();
+
+    return response()->json(['Tarea' => $task->toArray()], $this->successStatus);
+}
+
 }
