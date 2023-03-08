@@ -20,9 +20,9 @@ public function task()
 {
     return $this->belongsTo(Task::class);
 }
-
+/*
 public function teacher()
 {
     return $this->belongsTo(Teacher::class);
-}
+}*/
 }

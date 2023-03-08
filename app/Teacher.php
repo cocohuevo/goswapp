@@ -13,11 +13,11 @@ class Teacher extends Model
     protected $fillable = [
         'firstname','surname', 'email', 'password','type','address','mobile','cicle_id',
     ];
-    
+    /*
     public function tasks()
     {
         return $this->hasMany(Task::class);
-    }
+    }*/
 
     public function cicle()
     {
