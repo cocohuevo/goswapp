@@ -49,6 +49,7 @@ Route::middleware('auth:api')->group( function () {
 	Route::put('/assign-task/{assignmentId}/unassignTaskFromStudent', 'API\TaskAssignmentController@unassignTaskFromStudent');
 	Route::put('/removeassign-task/{userId}/{taskId}', 'API\TaskAssignmentController@removeTaskFromStudent');
 	Route::get('/tasksAssignment/{taskId}/students', 'API\TaskAssignmentController@getStudentsByTaskId');
+	Route::get('task-assignments/cicle', 'API\TaskAssignmentController@getTasksForCicle');
 });
 
 Route::resource('cicles', 'API\CicleController');

@@ -27,5 +27,10 @@ class Student extends Model
     {
         return $this->belongsTo(Cicle::class);
     }
+	
+public function user()
+{
+    return $this->belongsTo(User::class, 'student_id');
+}
     
 }

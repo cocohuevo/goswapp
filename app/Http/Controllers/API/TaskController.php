@@ -23,9 +23,10 @@ class TaskController extends Controller
      */
     public function index()
 {
-    $tasks = Task::all();
-    $tasks = $tasks->map(function($task){
-        $task['grade'] = $task->grade !== null ? number_format($task->grade, 2) : null;
+    $tasks = Task::all()->filter(function($task){
+        return $task->grade !== null;
+    })->map(function($task){
+        $task['grade'] = number_format($task->grade, 2);
         $task['client_rating'] = $task->client_rating !== null ? number_format($task->client_rating, 2) : null;
         return $task;
     });
@@ -170,12 +171,13 @@ public function rateTask($taskId, Request $request)
     $task = Task::findOrFail($taskId);
     $task->grade = $request->input('grade');
     $task->grade = number_format((double)$task->grade, 2, '.', '');
+    $task->num_boscoins = $task->grade * 100;
     $task->save();
     return response()->json([
         'message' => 'Tarea valorada correctamente',
         'task' => [
             'id' => $task->id,
-            'name' => $task->name,
+            'name' => $task->title,
             'description' => $task->description,
             'grade' => number_format($task->grade, 2),
             'created_at' => $task->created_at,
@@ -199,7 +201,7 @@ public function rateCompletedTask(Request $request, $id)
     // Validar si la tarea ha sido completada
     if (empty($task->completion_date)) {
         return response()->json([
-            'message' => 'La tarea aún no ha sido completada',
+            'message' => 'La tarea aun no ha sido completada',
         ], 400);
     }
 

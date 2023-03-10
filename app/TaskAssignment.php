@@ -13,16 +13,16 @@ class TaskAssignment extends Model
 
     public function student()
 {
-    return $this->belongsTo(Student::class);
+    return $this->belongsTo(Student::class, 'student_id');
 }
-
 public function task()
 {
     return $this->belongsTo(Task::class);
 }
-/*
-public function teacher()
+
+public function user()
 {
-    return $this->belongsTo(Teacher::class);
-}*/
+    return $this->belongsTo(User::class);
+}
+
 }

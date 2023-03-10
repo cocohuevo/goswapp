@@ -178,4 +178,27 @@ public function removeTaskFromStudent($userId, $taskId)
     }
 }
 
-}
+public function getTasksForCicle()
+{
+    $user = auth()->user();
+    
+    if (!$user->isStudent()) {
+        return response()->json(['error' => 'El usuario no es un estudiante'], 401);
+    }
+    
+    $student = Student::find($user->id);
+    $cicleId = $student->cicle_id;    
+
+    // Obtener todas las asignaciones de tareas que pertenecen a ese estudiante
+    $taskAssignments = TaskAssignment::where('student_id', $student->id)->get();
+
+    // Obtener todas las tareas que pertenecen a ese ciclo escolar
+    $tasks = Task::where('cicle_id', $cicleId)->get();
+
+    // Devolver una respuesta JSON que incluya los datos del estudiante y las tareas asignadas
+    return response()->json([
+        'estudiante' => $student,
+        'tareas' => $tasks,
+        'tareas_asignadas' => $taskAssignments
+    ], $this->successStatus);
+}}

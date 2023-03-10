@@ -42,11 +42,16 @@ class User extends Authenticatable
      {
          return $this->hasMany(Task::class);
      }
-/*
-     public function assignments()
+
+	public function isStudent()
 {
-    return $this->hasMany(TaskAssignment::class);
-}*/
-          
+    return $this->type === 'student';
+}
+
+public function student()
+{
+    return $this->belongsTo(Student::class, 'student_id');
+}
+	          
 }
 
