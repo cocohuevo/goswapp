@@ -34,13 +34,19 @@ Route::middleware('auth:api')->group( function () {
 	Route::resource('users', 'API\UserController');
 });
 
-Route::middleware('auth:api')->group( function () {
-	Route::resource('students', 'API\StudentController');
+Route::middleware('auth:api')->group(function () {
+    Route::resource('students', 'API\StudentController')->except('store');
 });
 
+Route::post('/students', 'API\StudentController@store');
+
 Route::middleware('auth:api')->group( function () {
-	Route::resource('teachers', 'API\TeacherController');
+	Route::resource('teachers', 'API\TeacherController')->except('store');
+	Route::get('teachers/{id}/studentsWithCompletedTasks', 'API\TeacherController@studentsWithCompletedTasks');
+
 });
+
+Route::post('/teachers', 'API\TeacherController@store');
 
 Route::middleware('auth:api')->group( function () {
 	Route::resource('taskAssignments', 'API\TaskAssignmentController');

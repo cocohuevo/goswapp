@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Student;
+use App\User;
 use Validator;
 use Illuminate\Support\Facades\Auth;
 
@@ -29,26 +30,44 @@ class StudentController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
-    {
-        $input = $request->all();
-        $validator = Validator::make($input, [
-            'firstname' => 'required',
-            'surname' => 'required',
-            'email' => 'required|email',
-            'password' => 'required',
-            'mobile' => 'required',
-            'cicle_id' => 'required',
-
-        ]);
-        if($validator->fails()) {
-            return response()->json(['error' => $validator->errors()], 401);       
-        }
-        $input['password'] = bcrypt($input['password']);
-        $input['type'] = 'student';
-        $student = Student::create($input);
-        return response()->json(['Estudiante' => $student->toArray()], $this->successStatus);
+{
+    $input = $request->all();
+    $validator = Validator::make($input, [
+        'firstname' => 'required',
+        'surname' => 'required',
+        'email' => 'required|email',
+        'password' => 'required',
+        'mobile' => 'required',
+        'cicle_id' => 'required',
+    ]);
+    if($validator->fails()) {
+        return response()->json(['error' => $validator->errors()], 401);       
     }
-
+    // Crear el usuario
+    $user = User::create([
+        'firstname' => $input['firstname'],
+        'surname' => $input['surname'],
+        'email' => $input['email'],
+        'password' => bcrypt($input['password']),
+        'mobile' => $input['mobile'],
+        'address' => $input['address'],
+        'type' => 'student',
+    ]);
+    // Crear el estudiante con el mismo ID del usuario
+    $student = new Student([
+        'firstname' => $input['firstname'],
+        'surname' => $input['surname'],
+        'email' => $input['email'],
+        'password' => bcrypt($input['password']),
+        'mobile' => $input['mobile'],
+        'type' => 'student',
+        'address' => $input['address'],
+        'cicle_id' => $input['cicle_id'],
+    ]);
+    $user->student()->save($student);
+    // Devolver la respuesta con los datos del estudiante recién creado
+    return response()->json(['Estudiante' => $student->toArray()], $this->successStatus);
+}
     /**
      * Display the specified resource.
      *
@@ -113,7 +132,4 @@ class StudentController extends Controller
         $student->delete();
         return response()->json(['Estudiante' => $student->toArray()], $this->successStatus);
     }
-
-    
-
 }

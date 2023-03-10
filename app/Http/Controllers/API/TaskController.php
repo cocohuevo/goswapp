@@ -23,13 +23,24 @@ class TaskController extends Controller
      */
     public function index()
 {
-    $tasks = Task::all()->filter(function($task){
-        return $task->grade !== null;
-    })->map(function($task){
-        $task['grade'] = number_format($task->grade, 2);
-        $task['client_rating'] = $task->client_rating !== null ? number_format($task->client_rating, 2) : null;
-        return $task;
-    });
+    $user = Auth::user();
+
+    if ($user->type == 'teacher') {
+        $tasks = Task::whereNotNull('client_rating')
+                    ->get()
+                    ->map(function($task){
+                        $task['client_rating'] = number_format($task->client_rating, 2);
+                        return $task;
+                    });
+    } else {
+        $tasks = Task::all()
+                    ->map(function($task){
+                        $task['grade'] = number_format($task->grade, 2);
+                        $task['client_rating'] = $task->client_rating !== null ? number_format($task->client_rating, 2) : null;
+                        return $task;
+                    });
+    }
+
     return response()->json(['Tareas' => $tasks->toArray()], $this->successStatus);
 }
 
