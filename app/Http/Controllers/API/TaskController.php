@@ -9,7 +9,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Collection;
 use App\Task;
 use App\Cicle;
-use App\Profile;
+use App\TaskAssignment;
+use App\Student;
 use Validator;
 
 
@@ -240,6 +241,19 @@ public function completedTask($id, Request $request)
 
     $task->completion_date = now();
     $task->save();
+
+    // Buscar asignaciones de tarea que coincidan con el ID de la tarea
+    $taskAssignments = TaskAssignment::where('task_id', $id)->get();
+
+    // Iterar sobre las asignaciones de tarea y actualizar el campo num_boscoins del estudiante correspondiente
+    foreach ($taskAssignments as $taskAssignment) {
+        $studentId = $taskAssignment->student_id;
+        $student = Student::find($studentId);
+        if (!is_null($student)) {
+            $student->boscoins += $task->num_boscoins;
+            $student->save();
+        }
+    }
 
     return response()->json(['Tarea' => $task->toArray()], $this->successStatus);
 }

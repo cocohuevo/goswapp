@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Teacher;
 use App\User;
+use App\Cicle;
 use App\TaskAssignment;
 use Validator;
 use Illuminate\Support\Facades\Auth;
@@ -19,11 +20,21 @@ class TeacherController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index()
-    {
-        $teachers = Teacher::all();
-        return response()->json(['Profesores' => $teachers->toArray()], $this->successStatus);
-    }
+{
+    $teachers = Teacher::all();
 
+    // Obtener la información de la tabla de ciclos
+    $cicles = Cicle::all()->pluck('name', 'id');
+
+    // Agregar el campo cicleName a cada profesor
+    $teachers = $teachers->map(function ($teacher) use ($cicles) {
+        $cicleName = $cicles->get($teacher->cicle_id, 'Desconocido');
+        $teacher->cicleName = $cicleName;
+        return $teacher;
+    });
+
+    return response()->json(['Profesores' => $teachers->toArray()], $this->successStatus);
+}
     /**
      * Store a newly created resource in storage.
      *
