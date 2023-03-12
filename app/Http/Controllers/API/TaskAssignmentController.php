@@ -8,6 +8,7 @@ use App\Student;
 use App\TaskAssignment;
 use App\Task;
 use App\User;
+use App\Teacher;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 
@@ -201,4 +202,60 @@ public function getTasksForCicle()
         'tareas' => $tasks,
         'tareas_asignadas' => $taskAssignments
     ], $this->successStatus);
-}}
+}
+
+public function assignTeacherToTask($assignmentId)
+{
+    // Verifica si el usuario autenticado es un administrador
+    $user = auth()->user();
+    if (!$user || $user->type !== 'admin') {
+        return response()->json(['error' => 'Unauthorized'], 401);
+    }
+
+    // Encuentra la tarea de la asignación
+    $assignment = TaskAssignment::find($assignmentId);
+    if (!$assignment) {
+        return response()->json(['error' => 'Task Assignment not found'], 404);
+    }
+
+    // Encuentra el ciclo de la tarea de la asignación
+    $cicleId = $assignment->cicle_id;
+
+    // Encuentra el profesor que corresponde a ese ciclo
+    $teacher = DB::table('teachers')
+        ->where('cicle_id', $cicleId)
+        ->first();
+
+    if (!$teacher) {
+        return response()->json(['error' => 'No teacher found for this cicle'], 404);
+    }
+
+    // Asigna el id del profesor al campo teacher_id de la tabla task_assignments
+    $assignment->teacher_id = $teacher->id;
+    $assignment->save();
+
+    return response()->json(['message' => 'Teacher assigned to task assignment']);
+}
+
+public function unassignTeacherFromTask($assignmentId)
+{
+    // Verifica si el usuario autenticado es un administrador
+    $user = auth()->user();
+    if (!$user || $user->type !== 'admin') {
+        return response()->json(['error' => 'Unauthorized'], 401);
+    }
+
+    // Encuentra la tarea de la asignación
+    $assignment = TaskAssignment::find($assignmentId);
+    if (!$assignment) {
+        return response()->json(['error' => 'Task Assignment not found'], 404);
+    }
+
+    // Asigna el campo teacher_id de la tabla task_assignments a null
+    $assignment->teacher_id = null;
+    $assignment->save();
+
+    return response()->json(['message' => 'Teacher unassigned from task assignment']);
+}
+
+}

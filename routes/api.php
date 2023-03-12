@@ -32,6 +32,8 @@ Route::middleware('auth:api')->group( function () {
 
 Route::middleware('auth:api')->group( function () {
 	Route::resource('users', 'API\UserController');
+	Route::post('task_assignments/{assignmentId}/assign_teacher', 'API\TaskAssignmentController@assignTeacherToTask');
+	Route::put('task-assignment/{assignmentId}/unassign-teacher', 'API\TaskAssignmentController@unassignTeacherFromTask');
 });
 
 Route::middleware('auth:api')->group(function () {

@@ -27,7 +27,7 @@ class TaskController extends Controller
     $user = Auth::user();
 
     if ($user->type == 'teacher') {
-        $tasks = Task::whereNotNull('client_rating')
+        $tasks = Task::whereNotNull('grade')
                     ->get()
                     ->map(function($task){
                         $task['client_rating'] = number_format($task->client_rating, 2);
@@ -62,8 +62,6 @@ class TaskController extends Controller
         'num_boscoins' => 'nullable|integer',
         'cicle_id' => 'nullable|integer',
 	'comment' => 'nullable',
-        'client_address' => 'required',
-        'client_phone' => 'required',
         'client_rating' => 'nullable|numeric',
 	'completion_date' => 'nullable|date',
     ]);
