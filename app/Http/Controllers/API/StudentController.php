@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Student;
+use App\Cicle;
 use App\User;
 use Validator;
 use Illuminate\Support\Facades\Auth;
@@ -20,6 +21,17 @@ class StudentController extends Controller
     public function index()
     {
         $students = Student::all();
+
+        // Obtener la información de la tabla de ciclos
+        $cicles = Cicle::all()->pluck('name', 'id');
+
+        // Agregar el campo cicleName a cada alumno
+        $students = $students->map(function ($student) use ($cicles) {
+            $cicleName = $cicles->get($student->cicle_id, 'Desconocido');
+            $student->cicleName = $cicleName;
+            return $student;
+        });
+
         return response()->json(['Estudiantes' => $students->toArray()], $this->successStatus);
     }
 
