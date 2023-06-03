@@ -104,34 +104,42 @@ class TeacherController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
-    {
-        $input = $request->all();
-        $validator = Validator::make($input, [
-            'firstname' => 'required',
-            'surname' => 'required',
-            'mobile' => 'required',
-            'email' => 'required|email',
-            'password' => 'required',
-            'type' => 'required',
-            'boscoins'=>'required',
-        ]);
+{
+    $input = $request->all();
+    $validator = Validator::make($input, [
+        'firstname' => 'required',
+        'surname' => 'required',
+        'mobile' => 'required',
+        'email' => 'required|email',
+        'password' => 'required',
+    ]);
 
-        if($validator->fails()){
-            return response()->json(['error' => $validator->errors()], 401);       
-        }
-        $teacher->firstname= $input['firstname'];
-        $teacher->surname = $input['surname'];
-        $teacher->email = $input['email'];
-        $teacher->password = $input['password'];   
-        $teacher->address = $input['address'];
-        $teacher->boscoins= $input['boscoins'];
-        $teacher->mobile = $input['mobile'];
-        $teacher->type = $input['type'];
-        $teacher['password'] = bcrypt($teacher['password']);
-        $teacher->save();
-
-        return response()->json(['Usuario' => $teacher->toArray()], $this->successStatus);
+    if($validator->fails()){
+        return response()->json(['error' => $validator->errors()], 401);       
     }
+    
+    $teacher = Teacher::find($id);
+    $teacher->firstname= $input['firstname'];
+    $teacher->surname = $input['surname'];
+    $teacher->email = $input['email'];
+    $teacher->password = $input['password'];   
+    $teacher->address = $input['address'];
+    $teacher->mobile = $input['mobile'];
+    $teacher['password'] = bcrypt($teacher['password']);
+    $teacher->save();
+    
+    $user = User::find($teacher->user_id);
+    $user->firstname= $input['firstname'];
+    $user->surname = $input['surname'];
+    $user->email = $input['email'];
+    $user->password = $input['password'];   
+    $user->address = $input['address'];
+    $user->mobile = $input['mobile'];
+    $user['password'] = bcrypt($user['password']);
+    $user->save();
+
+    return response()->json(['Profesor actualizado' => $teacher->toArray()], $this->successStatus);
+}
 
     /**
      * Remove the specified resource from storage.

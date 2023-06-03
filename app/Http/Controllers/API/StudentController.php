@@ -104,34 +104,42 @@ class StudentController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
-    {
-        $input = $request->all();
-        $validator = Validator::make($input, [
-            'firstname' => 'required',
-            'surname' => 'required',
-            'mobile' => 'required',
-            'email' => 'required|email',
-            'password' => 'required',
-            'type' => 'required',
-            'boscoins'=>'required',
-        ]);
+{
+    $input = $request->all();
+    $validator = Validator::make($input, [
+        'firstname' => 'required',
+        'surname' => 'required',
+        'mobile' => 'required',
+        'email' => 'required|email',
+        'password' => 'required',
+    ]);
 
-        if($validator->fails()){
-            return response()->json(['error' => $validator->errors()], 401);       
-        }
-        $student->firstname= $input['firstname'];
-        $student->surname = $input['surname'];
-        $student->email = $input['email'];
-        $student->password = $input['password'];   
-        $student->address = $input['address'];
-        $student->boscoins= $input['boscoins'];
-        $student->mobile = $input['mobile'];
-        $student->type = $input['type'];
-        $student['password'] = bcrypt($student['password']);
-        $student->save();
-
-        return response()->json(['Usuario' => $student->toArray()], $this->successStatus);
+    if($validator->fails()){
+        return response()->json(['error' => $validator->errors()], 401);       
     }
+    
+    $student = Student::find($id);
+    $student->firstname= $input['firstname'];
+    $student->surname = $input['surname'];
+    $student->email = $input['email'];
+    $student->password = $input['password'];   
+    $student->address = $input['address'];
+    $student->mobile = $input['mobile'];
+    $student['password'] = bcrypt($student['password']);
+    $student->save();
+    
+    $user = User::find($student->user_id);
+    $user->firstname= $input['firstname'];
+    $user->surname = $input['surname'];
+    $user->email = $input['email'];
+    $user->password = $input['password'];   
+    $user->address = $input['address'];
+    $user->mobile = $input['mobile'];
+    $user['password'] = bcrypt($user['password']);
+    $user->save();
+
+    return response()->json(['Estudiante actualizado' => $student->toArray()], $this->successStatus);
+}
 
     /**
      * Remove the specified resource from storage.

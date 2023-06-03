@@ -65,33 +65,33 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, User $user)
-    {
-        $input = $request->all();
-        $validator = Validator::make($input, [
-            'firstname' => 'required',
-            'surname' => 'required',
-            'mobile' => 'required',
-            'email' => 'required|email',
-            'password' => 'required',
-            'type' => 'required',
-        ]);
+    public function update(Request $request, $id)
+{
+    $input = $request->all();
+    $validator = Validator::make($input, [
+        'firstname' => 'required',
+        'surname' => 'required',
+        'mobile' => 'required',
+        'email' => 'required|email',
+        'password' => 'required',
+    ]);
 
-        if($validator->fails()){
-            return response()->json(['error' => $validator->errors()], 401);       
-        }
-        $user->firstname= $input['firstname'];
-        $user->surname = $input['surname'];
-        $user->email = $input['email'];
-        $user->password = $input['password'];   
-        $user->address = $input['address'];
-        $user->mobile = $input['mobile'];
-        $user->type = $input['type'];
-        $user['password'] = bcrypt($user['password']);
-        $user->save();
-
-        return response()->json(['Usuario' => $user->toArray()], $this->successStatus);
+    if($validator->fails()){
+        return response()->json(['error' => $validator->errors()], 401);       
     }
+    
+    $user = User::find($id);
+    $user->firstname= $input['firstname'];
+    $user->surname = $input['surname'];
+    $user->email = $input['email'];
+    $user->password = $input['password'];   
+    $user->address = $input['address'];
+    $user->mobile = $input['mobile'];
+    $user['password'] = bcrypt($user['password']);
+    $user->save();
+
+    return response()->json(['Cliente actualizado' => $user->toArray()], $this->successStatus);
+}
     /**
      * Remove the specified resource from storage.
      *
