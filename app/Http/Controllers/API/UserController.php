@@ -73,7 +73,6 @@ class UserController extends Controller
         'surname' => 'required',
         'mobile' => 'required',
         'email' => 'required|email',
-        'password' => 'required',
     ]);
 
     if($validator->fails()){
@@ -84,10 +83,8 @@ class UserController extends Controller
     $user->firstname= $input['firstname'];
     $user->surname = $input['surname'];
     $user->email = $input['email'];
-    $user->password = $input['password'];   
     $user->address = $input['address'];
     $user->mobile = $input['mobile'];
-    $user['password'] = bcrypt($user['password']);
     $user->save();
 
     return response()->json(['Cliente actualizado' => $user->toArray()], $this->successStatus);

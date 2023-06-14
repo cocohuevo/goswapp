@@ -9,6 +9,7 @@ use App\TaskAssignment;
 use App\Task;
 use App\User;
 use App\Teacher;
+use App\Cicle;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 
@@ -55,13 +56,13 @@ class TaskAssignmentController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function show($id)
-    {
-        $taskAssignment = TaskAssignments::find($id);
-        if (is_null($taskAssignment)) {
-            return response()->json(['error' => $validator->errors()], 401);
-        }
-        return response()->json(['Solicitud de tarea' => $taskAssignment->toArray()], $this->successStatus);
+{
+    $taskAssignment = TaskAssignment::find($id);
+    if (is_null($taskAssignment)) {
+        return response()->json(['error' => 'La tarea asignada no existe'], 401);
     }
+    return response()->json(['Solicitud de tarea' => $taskAssignment->toArray()], $this->successStatus);
+}
 
     /**
      * Update the specified resource in storage.
@@ -111,12 +112,17 @@ class TaskAssignmentController extends Controller
     if (!auth()->check()) {
         return response()->json(['error' => 'Unauthorized'], 401);
     } else {
-        $student = Student::with('cicle')->find($userId);
+        $student = DB::table('students')
+              ->where('user_id', $userId)
+              ->first();
         $assignment = new TaskAssignment;
         $assignment->student_id = $userId;
         $assignment->student_name = $student->firstname;
-        $assignment->cicle_student = $student->cicle->name;
-	$assignment->cicle_id = $student->cicle->id;
+	$cicle = DB::table('cicles')
+              ->where('id', $student->cicle_id)
+              ->first();
+        $assignment->cicle_student = $cicle->name;
+	$assignment->cicle_id = $cicle->id;
         $assignment->task_id = $taskId;
         $assignment->save();
 
@@ -127,7 +133,7 @@ class TaskAssignmentController extends Controller
 public function getStudentsByTaskId($taskId)
 {
     $taskAssignments = DB::table('task_assignments')
-        ->join('students', 'students.id', '=', 'task_assignments.student_id')
+        ->join('students', 'students.user_id', '=', 'task_assignments.student_id')
         ->select('task_assignments.id', 'task_assignments.student_name', 'students.surname', 'task_assignments.cicle_student','task_assignments.assigned_at')
         ->where('task_assignments.task_id', $taskId)
         ->get();
@@ -174,7 +180,7 @@ public function removeTaskFromStudent($userId, $taskId)
             $assignment->delete();
             return response()->json(['message' => 'Tarea desasignada del alumno']);
         }else{
-            return response()->json(['message' => 'La tarea no estÃ¡ asignada a este alumno']);
+            return response()->json(['message' => 'La tarea no está asignada a este alumno']);
         }
     }
 }
@@ -187,11 +193,10 @@ public function getTasksForCicle()
         return response()->json(['error' => 'El usuario no es un estudiante'], 401);
     }
     
-    $student = Student::find($user->id);
+    $student = Student::where('user_id', $user->id)->first();
     $cicleId = $student->cicle_id;    
-
     // Obtener todas las asignaciones de tareas que pertenecen a ese estudiante
-    $taskAssignments = TaskAssignment::where('student_id', $student->id)->get();
+    $taskAssignments = TaskAssignment::where('student_id', $student->user_id)->get();
 
     // Obtener todas las tareas que pertenecen a ese ciclo escolar
     $tasks = Task::where('cicle_id', $cicleId)->get();
@@ -212,13 +217,13 @@ public function assignTeacherToTask($assignmentId)
         return response()->json(['error' => 'Unauthorized'], 401);
     }
 
-    // Encuentra la tarea de la asignaciÃ³n
+    // Encuentra la tarea de la asignación
     $assignment = TaskAssignment::find($assignmentId);
     if (!$assignment) {
         return response()->json(['error' => 'Task Assignment not found'], 404);
     }
 
-    // Encuentra el ciclo de la tarea de la asignaciÃ³n
+    // Encuentra el ciclo de la tarea de la asignación
     $cicleId = $assignment->cicle_id;
 
     // Encuentra el profesor que corresponde a ese ciclo
@@ -245,7 +250,7 @@ public function unassignTeacherFromTask($assignmentId)
         return response()->json(['error' => 'Unauthorized'], 401);
     }
 
-    // Encuentra la tarea de la asignaciÃ³n
+    // Encuentra la tarea de la asignación
     $assignment = TaskAssignment::find($assignmentId);
     if (!$assignment) {
         return response()->json(['error' => 'Task Assignment not found'], 404);

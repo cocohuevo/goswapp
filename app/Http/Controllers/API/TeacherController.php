@@ -23,7 +23,7 @@ class TeacherController extends Controller
 {
     $teachers = Teacher::all();
 
-    // Obtener la informaciÃ³n de la tabla de ciclos
+    // Obtener la información de la tabla de ciclos
     $cicles = Cicle::all()->pluck('name', 'id');
 
     // Agregar el campo cicleName a cada profesor
@@ -77,7 +77,7 @@ class TeacherController extends Controller
         'cicle_id' => $input['cicle_id'],
     ]);
     $user->teacher()->save($teacher);
-    // Devolver la respuesta con los datos del profesor reciÃ©n creado
+    // Devolver la respuesta con los datos del profesor recién creado
     return response()->json(['Profesor' => $teacher->toArray()], $this->successStatus);
 }
 
@@ -111,31 +111,27 @@ class TeacherController extends Controller
         'surname' => 'required',
         'mobile' => 'required',
         'email' => 'required|email',
-        'password' => 'required',
     ]);
 
     if($validator->fails()){
         return response()->json(['error' => $validator->errors()], 401);       
     }
-    
-    $teacher = Teacher::find($id);
-    $teacher->firstname= $input['firstname'];
+    $teacher = Teacher::where('user_id',$id)->first();
+    if (is_null($teacher)) {
+        return response()->json(['error' => 'Profesor no encontrado'], 404);
+    }    $teacher->firstname= $input['firstname'];
     $teacher->surname = $input['surname'];
-    $teacher->email = $input['email'];
-    $teacher->password = $input['password'];   
+    $teacher->email = $input['email'];  
     $teacher->address = $input['address'];
     $teacher->mobile = $input['mobile'];
-    $teacher['password'] = bcrypt($teacher['password']);
     $teacher->save();
     
     $user = User::find($teacher->user_id);
     $user->firstname= $input['firstname'];
     $user->surname = $input['surname'];
-    $user->email = $input['email'];
-    $user->password = $input['password'];   
+    $user->email = $input['email']; 
     $user->address = $input['address'];
     $user->mobile = $input['mobile'];
-    $user['password'] = bcrypt($user['password']);
     $user->save();
 
     return response()->json(['Profesor actualizado' => $teacher->toArray()], $this->successStatus);

@@ -18,11 +18,13 @@ class RegisterController extends Controller {
 {
     $validator = Validator::make($request->all(), [
         'firstname' => 'required|string|max:255',
+        'surname' => 'required|string|max:255',
         'email' => 'required|email|unique:users',
         'password' => 'required|string|min:6',
         'mobile' => 'required',
     ], [
         'firstname.required' => 'El campo Nombre es obligatorio.',
+        'surname.required' => 'El campo Apellido es obligatorio.',
         'email.required' => 'El campo Correo electrónico es obligatorio.',
         'email.email' => 'El formato de Correo electrónico es inválido.',
         'email.unique' => 'El Correo electrónico ya ha sido registrado.',

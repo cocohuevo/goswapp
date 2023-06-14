@@ -12,6 +12,8 @@ use App\Cicle;
 use App\TaskAssignment;
 use App\Student;
 use Validator;
+use Illuminate\Support\Facades\Mail;
+
 
 
 class TaskController extends Controller
@@ -102,13 +104,13 @@ class TaskController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function show($id)
-    {
-        $task = Task::find($id);
-        if (is_null($task)) {
-            return response()->json(['error' => $validator->errors()], 401);
-        }
-        return response()->json(['Tarea' => $task->toArray()], $this->successStatus);
+{
+    $taskAssignment = TaskAssignment::find($id);
+    if (is_null($taskAssignment)) {
+        return response()->json(['error' => 'No se encontro la tarea asignada'], 401);
     }
+    return response()->json(['Solicitud de tarea' => $taskAssignment->toArray()], $this->successStatus);
+}
     /**
      * Update the specified resource in storage.
      *
@@ -158,6 +160,11 @@ class TaskController extends Controller
     $tasks = array_map(function($task){
         $task['grade'] = isset($task['grade']) ? number_format($task['grade'], 2) : null;
         $task['client_rating'] = isset($task['client_rating']) ? number_format($task['client_rating'], 2) : null;
+        
+        // Agregar número de solicitudes
+        $request_count = TaskAssignment::where('task_id', $task['task_id'])->count();
+        $task['request_count'] = $request_count;
+        
         return $task;
     }, $tasks);
     return [
@@ -211,19 +218,28 @@ public function rateCompletedTask(Request $request, $id)
     // Validar si la tarea ha sido completada
     if (empty($task->completion_date)) {
         return response()->json([
-            'message' => 'La tarea aun no ha sido completada',
+            'message' => 'La tarea aún no ha sido completada',
         ], 400);
     }
 
     $rating = $request->input('client_rating');
     $comment = $request->input('comment');
- 
-
-    // Actualizar la tarea con el comentario y la valoraciÃ³n
     $task->client_rating = $rating;
     $task->comment = $comment;
     $task->save();
 
+
+    if ($rating < 3) {
+        // Enviar el correo electrónico
+        $to = 'albertnene81@hotmail.com';
+        $subject = 'Tarea calificada como baja';
+        $message = 'La tarea '.$task->id.' - '.$task->title.' ha sido calificada como baja. Por favor, revisa y toma las medidas necesarias.';
+
+        Mail::raw($message, function ($mail) use ($to, $subject) {
+            $mail->to($to)
+                ->subject($subject);
+        });
+    }
     return response()->json([
         'message' => utf8_encode('Tarea valorada correctamente'),
         'task' => $task->toArray(),
@@ -234,7 +250,7 @@ public function completedTask($id, Request $request)
 {
     $task = Task::find($id);
     if (is_null($task)) {
-        return response()->json(['error' => 'No se encontro la tarea especificada'], 401);
+        return response()->json(['error' => 'No se encontró la tarea especificada'], 401);
     }
 
     $task->completion_date = now();
@@ -246,7 +262,7 @@ public function completedTask($id, Request $request)
     // Iterar sobre las asignaciones de tarea y actualizar el campo num_boscoins del estudiante correspondiente
     foreach ($taskAssignments as $taskAssignment) {
         $studentId = $taskAssignment->student_id;
-        $student = Student::find($studentId);
+        $student = Student::where('student_id', $studentId)->first();
         if (!is_null($student)) {
             $student->boscoins += $task->num_boscoins;
             $student->save();

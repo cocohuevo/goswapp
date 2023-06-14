@@ -16,8 +16,6 @@ class CreateTaskAssignmentsTable extends Migration
         Schema::create('task_assignments', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('student_id');
-            $table->string('student_name')->nullable();
-            $table->string('cicle_student')->nullable();
             $table->unsignedBigInteger('task_id');
             $table->unsignedBigInteger('teacher_id')->nullable();
             $table->dateTime('assigned_at')->nullable();

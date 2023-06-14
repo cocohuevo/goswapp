@@ -22,7 +22,7 @@ class StudentController extends Controller
     {
         $students = Student::all();
 
-        // Obtener la informaciÃ³n de la tabla de ciclos
+	// Obtener la información de la tabla de ciclos
         $cicles = Cicle::all()->pluck('name', 'id');
 
         // Agregar el campo cicleName a cada alumno
@@ -30,7 +30,7 @@ class StudentController extends Controller
             $cicleName = $cicles->get($student->cicle_id, 'Desconocido');
             $student->cicleName = $cicleName;
             return $student;
-        });
+        });	
 
         return response()->json(['Estudiantes' => $students->toArray()], $this->successStatus);
     }
@@ -77,7 +77,7 @@ class StudentController extends Controller
         'cicle_id' => $input['cicle_id'],
     ]);
     $user->student()->save($student);
-    // Devolver la respuesta con los datos del estudiante reciÃ©n creado
+    // Devolver la respuesta con los datos del estudiante recién creado
     return response()->json(['Estudiante' => $student->toArray()], $this->successStatus);
 }
     /**
@@ -111,34 +111,33 @@ class StudentController extends Controller
         'surname' => 'required',
         'mobile' => 'required',
         'email' => 'required|email',
-        'password' => 'required',
     ]);
 
     if($validator->fails()){
         return response()->json(['error' => $validator->errors()], 401);       
     }
     
-    $student = Student::find($id);
-    $student->firstname= $input['firstname'];
-    $student->surname = $input['surname'];
-    $student->email = $input['email'];
-    $student->password = $input['password'];   
-    $student->address = $input['address'];
-    $student->mobile = $input['mobile'];
-    $student['password'] = bcrypt($student['password']);
-    $student->save();
-    
-    $user = User::find($student->user_id);
-    $user->firstname= $input['firstname'];
-    $user->surname = $input['surname'];
-    $user->email = $input['email'];
-    $user->password = $input['password'];   
-    $user->address = $input['address'];
-    $user->mobile = $input['mobile'];
-    $user['password'] = bcrypt($user['password']);
-    $user->save();
+    $student = Student::where('user_id', $id)->first();
+if (is_null($student)) {
+    return response()->json(['error' => 'Estudiante no encontrado'], 404);
+}
 
-    return response()->json(['Estudiante actualizado' => $student->toArray()], $this->successStatus);
+$student->firstname = $input['firstname'];
+$student->surname = $input['surname'];
+$student->email = $input['email']; 
+$student->address = $input['address'];
+$student->mobile = $input['mobile'];
+$student->save();
+
+$user = User::find($student->user_id);
+$user->firstname = $input['firstname'];
+$user->surname = $input['surname'];
+$user->email = $input['email'];
+$user->address = $input['address'];
+$user->mobile = $input['mobile'];
+$user->save();
+
+return response()->json(['Estudiante actualizado' => $student->toArray()], $this->successStatus);
 }
 
     /**
@@ -152,4 +151,5 @@ class StudentController extends Controller
         $student->delete();
         return response()->json(['Estudiante' => $student->toArray()], $this->successStatus);
     }
+
 }
