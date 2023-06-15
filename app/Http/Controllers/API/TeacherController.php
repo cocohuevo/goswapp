@@ -23,7 +23,7 @@ class TeacherController extends Controller
 {
     $teachers = Teacher::all();
 
-    // Obtener la información de la tabla de ciclos
+    // Obtener la informaciï¿½n de la tabla de ciclos
     $cicles = Cicle::all()->pluck('name', 'id');
 
     // Agregar el campo cicleName a cada profesor
@@ -77,7 +77,7 @@ class TeacherController extends Controller
         'cicle_id' => $input['cicle_id'],
     ]);
     $user->teacher()->save($teacher);
-    // Devolver la respuesta con los datos del profesor recién creado
+    // Devolver la respuesta con los datos del profesor reciï¿½n creado
     return response()->json(['Profesor' => $teacher->toArray()], $this->successStatus);
 }
 
@@ -160,7 +160,7 @@ class TeacherController extends Controller
     foreach ($students as $student) {
         $completed_tasks = DB::table('tasks')
                             ->join('task_assignments', 'tasks.task_id', '=', 'task_assignments.task_id')
-                            ->where('task_assignments.student_id', '=', $student->id)
+                            ->where('task_assignments.student_id', '=', $student->user_id)
                             ->whereNotNull('tasks.completion_date')
                             ->count();
         $student->completed_tasks = $completed_tasks;

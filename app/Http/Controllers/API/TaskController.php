@@ -161,7 +161,7 @@ class TaskController extends Controller
         $task['grade'] = isset($task['grade']) ? number_format($task['grade'], 2) : null;
         $task['client_rating'] = isset($task['client_rating']) ? number_format($task['client_rating'], 2) : null;
         
-        // Agregar número de solicitudes
+        // Agregar nï¿½mero de solicitudes
         $request_count = TaskAssignment::where('task_id', $task['task_id'])->count();
         $task['request_count'] = $request_count;
         
@@ -218,7 +218,7 @@ public function rateCompletedTask(Request $request, $id)
     // Validar si la tarea ha sido completada
     if (empty($task->completion_date)) {
         return response()->json([
-            'message' => 'La tarea aún no ha sido completada',
+            'message' => 'La tarea aï¿½n no ha sido completada',
         ], 400);
     }
 
@@ -230,7 +230,7 @@ public function rateCompletedTask(Request $request, $id)
 
 
     if ($rating < 3) {
-        // Enviar el correo electrónico
+        // Enviar el correo electrï¿½nico
         $to = 'albertnene81@hotmail.com';
         $subject = 'Tarea calificada como baja';
         $message = 'La tarea '.$task->id.' - '.$task->title.' ha sido calificada como baja. Por favor, revisa y toma las medidas necesarias.';
@@ -250,7 +250,7 @@ public function completedTask($id, Request $request)
 {
     $task = Task::find($id);
     if (is_null($task)) {
-        return response()->json(['error' => 'No se encontró la tarea especificada'], 401);
+        return response()->json(['error' => 'No se encontrÃ³ la tarea especificada'], 401);
     }
 
     $task->completion_date = now();
@@ -262,7 +262,7 @@ public function completedTask($id, Request $request)
     // Iterar sobre las asignaciones de tarea y actualizar el campo num_boscoins del estudiante correspondiente
     foreach ($taskAssignments as $taskAssignment) {
         $studentId = $taskAssignment->student_id;
-        $student = Student::where('student_id', $studentId)->first();
+        $student = Student::where('user_id', $studentId)->first();
         if (!is_null($student)) {
             $student->boscoins += $task->num_boscoins;
             $student->save();
